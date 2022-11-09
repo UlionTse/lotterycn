@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/UlionTse/lotterycn/blob/master/docs/lotterycn_black.png" width="500"/>
+  <img src="https://github.com/UlionTse/lotterycn/blob/main/docs/lotterycn_black.png" width="500"/>
 </p>
 <p align="center">
   <a href="https://pypi.org/project/lotterycn"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/lotterycn.svg"></a>
