@@ -109,7 +109,7 @@ class ChinaWelfareLottery(Tse):
 
         durings = self.get_during_list(begin_date, end_date, freq=f'{self.cwl_max_batch}D')
         data = [] if is_detail_result else pandas.DataFrame()
-        for i in tqdm.tqdm(range(0, len(durings), 2), desc=f'Downloading <{lottery_name}>'):
+        for i in tqdm.tqdm(range(0, len(durings), 2), desc=f'Downloading <{lottery_name}>', ncols=80):
             result = self._cwl(lottery_name=lottery_name, begin_date=durings[i], end_date=durings[i+1], **kwargs)
             data = data + result['result'][::-1] if is_detail_result else pandas.concat([data, result.sort_values(by=['code'])], axis=0)
         return data if is_detail_result else data.reset_index(drop=True)
@@ -178,7 +178,7 @@ class ChinaSportsLottery(Tse):
             self.csl_pages = page_r.json()['value']['pages']
 
         data = [] if is_detail_result else pandas.DataFrame()
-        for page_no in tqdm.tqdm(range(1, self.csl_pages + 1), desc=f'Downloading <{lottery_name}>'):
+        for page_no in tqdm.tqdm(range(1, self.csl_pages + 1), desc=f'Downloading <{lottery_name}>', ncols=80):
             result = self._csl(lottery_name=lottery_name, page_no=page_no, **kwargs)
             data = data + result['value']['list'] if is_detail_result else pandas.concat([data, result], axis=0)
         return data[::-1] if is_detail_result else data[::-1].reset_index(drop=True)
@@ -229,7 +229,7 @@ class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
         """
         if amount < 1:
             raise LotteryError
-        return [self.get_random_lottery(lottery_name) for _ in tqdm.tqdm(range(amount), desc=f'Generating <{lottery_name}>')]
+        return [self.get_random_lottery(lottery_name) for _ in tqdm.tqdm(range(amount), desc=f'Generating <{lottery_name}>', ncols=80)]
 
     def get_random_base(self, k: int, max_n: int, min_n: int = 1, if_sort: bool = True, if_str: bool = True) -> Union[str, list]:
         lotts = random.sample(range(min_n, max_n + 1), k=k)
