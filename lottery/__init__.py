@@ -1,3 +1,4 @@
-# coding=utf-8
-# author=uliontse
-# datetime=2022/10/8_1:55
+__version__ = "0.0.1"
+__author__ = "UlionTse"
+
+from lotterycn.data import load_random_data, load_history_data

@@ -1,0 +1,9 @@
+LICENSE
+MANIFEST
+README.md
+requirements.txt
+setup.cfg
+setup.py
+lotterycn/__init__.py
+lotterycn/data.py
+lotterycn/test.py
