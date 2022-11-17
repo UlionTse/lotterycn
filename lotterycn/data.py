@@ -1,9 +1,11 @@
 # coding=utf-8
 # author=uliontse
 
+import sys
 import time
 import datetime
 import random
+import functools
 import urllib.parse
 from typing import Union
 
@@ -63,7 +65,7 @@ class ChinaWelfareLottery(Tse):
         super().__init__()
         self.session = None
         self.cwl_projects = ('ssq', 'qlc', 'kl8', '3d')
-        self.cwl_data_cols = ['name', 'code', 'date', 'red', 'blue', 'blue2']
+        self.cwl_data_cols = ['name', 'code', 'date', 'red', 'blue']  # 'blue2'
         self.cwl_host_url = 'http://www.cwl.gov.cn'  # http
         self.cwl_api_url = 'http://www.cwl.gov.cn/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice'  # http
         self.cwl_host_headers = self.get_headers(self.cwl_host_url, if_api=False, if_referer_for_host=True)
@@ -200,8 +202,11 @@ class ChinaSportsLottery(Tse):
 class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
     def __init__(self):
         super().__init__()
+        self.cl_projects = ('dlt', 'pls', 'plw', 'qxc', 'ssq', 'qlc', 'kl8', '3d')
+        self.cl_cols = ['lottery_name', 'lottery_order', 'lottery_date', 'lottery_red', 'lottery_blue']
+        self.cl_has_blue_projects = ['ssq', 'qlc', 'dlt', 'qxc']
 
-    def load_history_data(self, lottery_name: str, **kwargs):
+    def load_history_data(self, lottery_name: str, **kwargs) -> Union[list, pandas.DataFrame]:
         """
         https://www.lottery.gov.cn, https://www.cwl.gov.cn
         https://www.lottery.gov.cn/bzzx/yxgz, https://www.cwl.gov.cn/fcpz/yxjs
@@ -214,22 +219,29 @@ class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
                 :param sleep_seconds: float, default `random.random()`.
         :return: list or pandas.DataFrame
         """
+        is_detail_result = kwargs.get('is_detail_result', False)
         if lottery_name in self.cwl_projects:
-            return self.cwl(lottery_name=lottery_name, **kwargs)
-        return self.csl(lottery_name=lottery_name, **kwargs)
+            data = self.cwl(lottery_name=lottery_name, **kwargs)
+        else:
+            data = self.csl(lottery_name=lottery_name, **kwargs)
+        return data if is_detail_result else self.get_history_data_dataframe(data, lottery_name)
 
-    def load_random_data(self, lottery_name: str = 'ssq', amount: int = 1) -> list:
+    def load_random_data(self, lottery_name: str = 'ssq', amount: int = 1, **kwargs) -> Union[list, pandas.DataFrame]:
         """
         https://www.lottery.gov.cn, https://www.cwl.gov.cn
         https://www.lottery.gov.cn/bzzx/yxgz, https://www.cwl.gov.cn/fcpz/yxjs
         大乐透、排列3、排列5、7星彩、双色球、七乐彩、快乐8、福彩3D
         :param lottery_name: str, default 'ssq'. must in ('dlt', 'pls', 'plw', 'qxc', 'ssq', 'qlc', 'kl8', '3d')
         :param amount: int, default 1.
-        :return: list
+        :param **kwargs:
+                :param is_detail_result: boolean, default False.
+        :return: list or pandas.DataFrame
         """
+        is_detail_result = kwargs.get('is_detail_result', False)
         if amount < 1:
             raise LotteryError
-        return [self.get_random_lottery(lottery_name) for _ in tqdm.tqdm(range(amount), desc=f'Generating <{lottery_name}>', ncols=80)]
+        data_list = [self.get_random_lottery(lottery_name) for _ in tqdm.tqdm(range(amount), desc=f'Generating <{lottery_name}>', ncols=80)]
+        return data_list if is_detail_result else self.get_random_data_dataframe(data_list, lottery_name, amount)
 
     def get_random_base(self, k: int, max_n: int, min_n: int = 1, if_sort: bool = True, if_str: bool = True) -> Union[str, list]:
         lotts = random.sample(range(min_n, max_n + 1), k=k)
@@ -238,24 +250,51 @@ class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
 
     def get_random_lottery(self, lottery_name: str = 'ssq') -> list:
         if lottery_name == 'ssq':
-            return [self.get_random_base(k=6, max_n=33), self.get_random_base(k=1, max_n=16)]
+            data = [self.get_random_base(k=6, max_n=33), self.get_random_base(k=1, max_n=16)]
         elif lottery_name == 'qlc':
             lotts = self.get_random_base(k=8, max_n=30, if_sort=False, if_str=False)
-            return [','.join(map(str, sorted(lotts[:-1]))), str(lotts[-1])]
+            data = [','.join(map(str, sorted(lotts[:-1]))), str(lotts[-1])]
         elif lottery_name == 'kl8':
-            return [self.get_random_base(k=20, max_n=80)]
+            data = [self.get_random_base(k=20, max_n=80)]
         elif lottery_name in ('3d', 'pls'):
-            return [','.join(self.get_random_base(k=1, max_n=9, min_n=0) for _ in range(3))]
+            data = [','.join(self.get_random_base(k=1, max_n=9, min_n=0) for _ in range(3))]
         elif lottery_name == 'plw':
-            return [','.join(self.get_random_base(k=1, max_n=9, min_n=0) for _ in range(5))]
+            data = [','.join(self.get_random_base(k=1, max_n=9, min_n=0) for _ in range(5))]
         elif lottery_name == 'dlt':
-            return [self.get_random_base(k=5, max_n=35), self.get_random_base(k=2, max_n=12)]
+            data = [self.get_random_base(k=5, max_n=35), self.get_random_base(k=2, max_n=12)]
         elif lottery_name == 'qxc':
-            return [','.join(self.get_random_base(k=1, max_n=9, min_n=0) for _ in range(5)), self.get_random_base(k=1, max_n=14, min_n=0)]
+            data = [','.join(self.get_random_base(k=1, max_n=9, min_n=0) for _ in range(5)), self.get_random_base(k=1, max_n=14, min_n=0)]
         else:
             raise LotteryError
+        return data
+
+    def get_random_data_dataframe(self, data_list: list, lottery_name: str, amount: int) -> pandas.DataFrame:
+        has_cols = self.cl_cols[3:] if lottery_name in self.cl_has_blue_projects else self.cl_cols[3:-1]
+        new_cols = self.cl_cols[:3] if lottery_name in self.cl_has_blue_projects else self.cl_cols[:3] + self.cl_cols[4:]
+        data = pandas.DataFrame(data_list, columns=has_cols)
+        for col in new_cols:
+            data[col] = lottery_name if col[-4:] == 'name' else ''
+        data[self.cl_cols[1]] = range(amount)
+        return data[self.cl_cols]
+
+    def get_history_data_dataframe(self, data_frame: pandas.DataFrame, lottery_name: str) -> pandas.DataFrame:
+        if lottery_name in self.csl_projects:
+            data = pandas.DataFrame(data_frame.to_numpy(), columns=self.cl_cols[:-1])
+            if lottery_name == 'dlt':
+                data['lottery_blue'] = data['lottery_red'].apply(lambda x: ','.join(x.split(' ')[-2:]))
+                data['lottery_red'] = data['lottery_red'].apply(lambda x: ','.join(x.split(' ')[:-2]))
+            elif lottery_name == 'qxc':
+                data['lottery_blue'] = data['lottery_red'].apply(lambda x: ','.join(x.split(' ')[-1:]))
+                data['lottery_red'] = data['lottery_red'].apply(lambda x: ','.join(x.split(' ')[:-1]))
+            else:
+                data['lottery_red'] = data['lottery_red'].apply(lambda x: ','.join(x.split(' ')))
+            return data
+        return pandas.DataFrame(data_frame.to_numpy(), columns=self.cl_cols)
 
 
 _cl = ChinaLottery()
 load_random_data = _cl.load_random_data
 load_history_data = _cl.load_history_data
+
+lottery_pool = _cl.cl_projects
+sys.stderr.write(f'Support lottery_pool {lottery_pool} only.\n')

@@ -1,3 +1,6 @@
 0.0.1
 build new project
 functions: load_random_data() & load_history_data()
+
+0.0.4
+standard output
