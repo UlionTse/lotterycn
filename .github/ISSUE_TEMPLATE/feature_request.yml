@@ -24,7 +24,7 @@ body:
       description: What version of App(or PYPI) did you expect?
       options:
         - next newest version
-        - future version
+        - a future version
     validations:
       required: true
   - type: dropdown
