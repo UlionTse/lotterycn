@@ -1,0 +1,135 @@
+site_name: LotteryCN
+site_description: A Python library for enjoyable analysis of Chinese welfare & sports lotteries
+site_url: https://uliontse.github.io/lotterycn/
+repo_url: https://github.com/UlionTse/lotterycn
+repo_name: UlionTse/lotterycn
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2022 - present Ulion.Tse
+
+theme:
+  name: material
+  language: en
+  logo: assets/lotterycn_mark.png
+  favicon: assets/lotterycn_mark.png
+  font:
+    text: Noto Sans SC      # 思源黑体（SIL OFL），开源项目标准中文字体
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - content.tabs.link
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - toc.follow
+
+hooks:
+  - hooks.py
+
+plugins:
+  - search
+  - autorefs:
+      resolve_closest: true
+  - i18n:
+      docs_structure: suffix
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: zh
+          name: 简体中文
+          build: true
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: sphinx
+            docstring_section_style: table
+            show_root_heading: true
+            show_root_full_path: false
+            show_bases: true
+            show_source: false
+            show_if_no_docstring: false
+            group_by_category: true
+            show_category_heading: true
+            show_signature: true
+            separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            annotations_path: brief
+            merge_init_into_class: true
+            members_order: source
+            filters: ["!^_"]
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - def_list
+  - tables
+  - toc:
+      permalink: true
+  - fenced_code
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/UlionTse/lotterycn
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - assets/mathjax/tex-chtml.js   # 自托管 MathJax 3.2.2 组件（**必须用 tex-chtml**，tex-mml-chtml 变体会产出空容器；字体在同目录 output/chtml/fonts/woff-v2）
+
+extra_css:
+  - stylesheets/extra.css
+
+watch:
+  - lotterycn
+
+nav:
+  - Home: index.md
+  - Games & Rules: games.md
+  - Strategies: strategies.md
+  - API Reference:
+      - data: api/data.md
+      - odds: api/odds.md
+      - check: api/check.md
+      - analysis: api/analysis.md
+      - predict: api/predict.md
+      - backtest: api/backtest.md
+      - draws: api/draws.md
+      - cache: api/cache.md
+      - cli: api/cli.md

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Docs bilingual sync check
+        run: python tools/check_docs_sync.py
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest ruff mypy pytest-cov hypothesis
+      - name: Lint
+        run: ruff check lotterycn tests
+      - name: Type check
+        run: mypy
+      - name: Test (offline with coverage)
+        run: pytest -m "not network" --cov=lotterycn --cov-report=term-missing
+      - name: Build distributions
+        run: |
+          pip install build
+          python -m build
+      - name: Dependency security scan
+        # 非阻塞：advisory 命中不使 CI 变红，仅提示
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          pip-audit --skip-editable

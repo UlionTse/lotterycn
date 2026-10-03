@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="392" height="476.25" viewBox="0 0 392 476.25">
+  <title>lotterycn</title>
+  <defs>
+    <linearGradient id="lcframe" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="366.94" y2="307.90">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#00b0d2"/>
+    </linearGradient>
+    <linearGradient id="lcline" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="387.89" y2="271.60">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#00b0d2"/>
+    </linearGradient>
+    <radialGradient id="lcred" gradientUnits="userSpaceOnUse" cx="115.04" cy="94.04" r="67.20">
+      <stop offset="0" stop-color="#ff8a98"/>
+      <stop offset="0.42" stop-color="#e3062d"/>
+      <stop offset="1" stop-color="#8c001a"/>
+    </radialGradient>
+    <radialGradient id="lcredGloss">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.647"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.388"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="lcredClip">
+      <circle cx="131" cy="110" r="42"/>
+    </clipPath>
+    <radialGradient id="lcblue" gradientUnits="userSpaceOnUse" cx="193.04" cy="94.04" r="67.20">
+      <stop offset="0" stop-color="#82afff"/>
+      <stop offset="0.42" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#0c2876"/>
+    </radialGradient>
+    <radialGradient id="lcblueGloss">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.647"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.388"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="lcblueClip">
+      <circle cx="209" cy="110" r="42"/>
+    </clipPath>
+  </defs>
+
+  <g transform="translate(26 26)">
+    <path d="M 76.000,248.000 L 112.000,220.000 L 148.000,238.000 L 184.000,194.000 L 220.000,210.000 L 256.000,168.000" fill="none" stroke="url(#lcline)" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+    <g fill="url(#lcline)">
+      <circle cx="76" cy="248" r="8"/>
+      <circle cx="112" cy="220" r="8"/>
+      <circle cx="148" cy="238" r="8"/>
+      <circle cx="184" cy="194" r="8"/>
+      <circle cx="220" cy="210" r="8"/>
+      <circle cx="256" cy="168" r="8"/>
+    </g>
+    <circle cx="131" cy="110" r="42" fill="url(#lcred)"/>
+    <g clip-path="url(#lcredClip)">
+      <ellipse cx="114.72" cy="93.72" rx="12.60" ry="8.82" fill="url(#lcredGloss)"/>
+    </g>
+    <circle cx="209" cy="110" r="42" fill="url(#lcblue)"/>
+    <g clip-path="url(#lcblueClip)">
+      <ellipse cx="192.72" cy="93.72" rx="12.60" ry="8.82" fill="url(#lcblueGloss)"/>
+    </g>
+    <path d="M 170.000,20.000 L 299.904,95.000 L 299.904,245.000 L 170.000,320.000 L 40.096,245.000 L 40.096,95.000 Z" fill="none" stroke="url(#lcframe)" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+    <g fill="#2563eb">
+      <circle cx="170.000" cy="20.000" r="10"/>
+      <circle cx="299.904" cy="95.000" r="10"/>
+      <circle cx="299.904" cy="245.000" r="10"/>
+      <circle cx="170.000" cy="320.000" r="10"/>
+      <circle cx="40.096" cy="245.000" r="10"/>
+      <circle cx="40.096" cy="95.000" r="10"/>
+    </g>
+  </g>
+  <text x="196.00" y="434.75" text-anchor="middle" font-family="Segoe UI, Selawik, sans-serif" font-size="66" font-weight="700" letter-spacing="-1.452"><tspan fill="#2563eb">lottery</tspan><tspan fill="#e3062d">cn</tspan></text>
+</svg>

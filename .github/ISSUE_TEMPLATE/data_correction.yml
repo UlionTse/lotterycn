@@ -1,0 +1,47 @@
+name: 数据纠错 / Data Correction
+description: 报告奖级、中奖条件、奖金或概率与本库实现不一致 / Report a mismatch between this library and official rules
+labels: ['data']
+body:
+  - type: dropdown
+    id: lottery
+    attributes:
+      label: 彩种 / Game
+      options:
+        - ssq（双色球）
+        - qlc（七乐彩）
+        - kl8（快乐8）
+        - 3d（福彩3D）
+        - dlt（超级大乐透）
+        - pls（排列3）
+        - plw（排列5）
+        - qxc（7星彩）
+        - other（其他）
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: 官方规则来源 URL / Official rule source URL
+      description: 必须为 cwl.gov.cn 或 lottery.gov.cn 的链接；不接受第三方网站 / Must be a link to cwl.gov.cn or lottery.gov.cn; other sites are not accepted
+      placeholder: cwl.gov.cn ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 官方规则内容 / What the official rules say
+      description: 请引用规则原文（奖级、中奖条件、奖金）/ Quote the rule text (tier, condition, prize)
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 本库当前内容 / What this library currently says
+      description: 指出具体文件与位置，如 config.py 的 dlt_prize_role / File and location, e.g. dlt_prize_role in config.py
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 补充说明 / Notes
+      description: 规则生效时间、依据的公告等 / Effective date of the rule, related announcements, etc.

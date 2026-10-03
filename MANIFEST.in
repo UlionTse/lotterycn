@@ -1,5 +1,0 @@
-include *.md
-include *.txt
-include LICENSE
-include MANIFEST
-recursive-include lotterycn *.py

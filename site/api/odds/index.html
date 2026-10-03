@@ -1,0 +1,2075 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <meta name="description" content="A Python library for enjoyable analysis of Chinese welfare & sports lotteries">
+
+        <link rel="canonical" href="https://uliontse.github.io/lotterycn/api/odds/">
+
+        <link rel="prev" href="../data/">
+
+        <link rel="next" href="../check/">
+
+          <link rel="alternate" href="./" hreflang="en">
+
+          <link rel="alternate" href="../../zh/api/odds/" hreflang="zh">
+
+      <link rel="icon" href="../../assets/lotterycn_mark.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+
+        <title>odds - LotteryCN</title>
+
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"JetBrains Mono"}</style>
+
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+  </head>
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="teal">
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+        <a href="#odds-prize-odds-expected-value" class="md-skip">
+          Skip to content
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="LotteryCN" class="md-header__button md-logo" aria-label="LotteryCN" data-md-component="logo">
+
+  <img src="../../assets/lotterycn_mark.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LotteryCN
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              odds
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+        <form class="md-header__option" data-md-component="palette">
+
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+
+</form>
+
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+      <div class="md-header__option">
+  <div class="md-select">
+
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+
+          <li class="md-select__item">
+            <a href="../../zh/api/odds/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+
+      </ul>
+    </div>
+  </div>
+</div>
+
+        <label class="md-header__button md-icon" for="__search">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div class="md-header__source">
+        <a href="https://github.com/UlionTse/lotterycn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    UlionTse/lotterycn
+  </div>
+</a>
+      </div>
+
+  </nav>
+
+</header>
+
+    <div class="md-container" data-md-component="container">
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="LotteryCN" class="md-nav__button md-logo" aria-label="LotteryCN" data-md-component="logo">
+
+  <img src="../../assets/lotterycn_mark.png" alt="logo">
+
+    </a>
+    LotteryCN
+  </label>
+
+    <div class="md-nav__source">
+      <a href="https://github.com/UlionTse/lotterycn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    UlionTse/lotterycn
+  </div>
+</a>
+    </div>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    Home
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../../games/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    Games & Rules
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../../strategies/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    Strategies
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+
+  <span class="md-ellipsis">
+
+    API Reference
+
+  </span>
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+
+    API Reference
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    data
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item md-nav__item--active">
+
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+
+  <span class="md-ellipsis">
+
+    odds
+
+  </span>
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+
+      <a href="./" class="md-nav__link md-nav__link--active">
+
+  <span class="md-ellipsis">
+
+    odds
+
+  </span>
+
+      </a>
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#lotterycn.odds" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        odds
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="odds">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Classes
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        LotteryPac
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="LotteryPac">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.pac_c" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        pac_c
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.pac_p" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        pac_p
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.hyper_c" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        hyper_c
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.lottery_pac_c" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        lottery_pac_c
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.get_prize_level" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_prize_level
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.resolve_prize" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        resolve_prize
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.get_expectation_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_expectation_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.get_odds_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_odds_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.SsqPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        SsqPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.QlcPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        QlcPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.KenoPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        KenoPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        DltPac
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="DltPac">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac.get_odds_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_odds_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac.get_expectation_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_expectation_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DigitPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        DigitPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.QxcPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        QxcPac
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Functions:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Functions:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.load_prize_odds" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_prize_odds
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.load_prize_expectation" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_prize_expectation
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.load_dlt_compound_expectation" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_dlt_compound_expectation
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../check/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    check
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../analysis/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    analysis
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../predict/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    predict
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../backtest/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    backtest
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../draws/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    draws
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    cache
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    cli
+
+  </span>
+
+      </a>
+    </li>
+
+          </ul>
+        </nav>
+
+    </li>
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#lotterycn.odds" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        odds
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="odds">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Classes
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        LotteryPac
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="LotteryPac">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.pac_c" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        pac_c
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.pac_p" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        pac_p
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.hyper_c" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        hyper_c
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.lottery_pac_c" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        lottery_pac_c
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.get_prize_level" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_prize_level
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.resolve_prize" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        resolve_prize
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.get_expectation_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_expectation_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.LotteryPac.get_odds_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_odds_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.SsqPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        SsqPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.QlcPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        QlcPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.KenoPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        KenoPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        DltPac
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="DltPac">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac.get_odds_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_odds_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DltPac.get_expectation_dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        get_expectation_dataframe
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.DigitPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        DigitPac
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.QxcPac" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        QxcPac
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Functions:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Functions:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.load_prize_odds" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_prize_odds
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.load_prize_expectation" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_prize_expectation
+
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.odds.load_dlt_compound_expectation" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_dlt_compound_expectation
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+            <div class="md-content" data-md-component="content">
+
+              <article class="md-content__inner md-typeset">
+
+<h1 id="odds-prize-odds-expected-value">odds — Prize odds &amp; expected value<a class="headerlink" href="#odds-prize-odds-expected-value" title="Permanent link">&para;</a></h1>
+<p>Exact combinatorics from official rules: winning combinations, probabilities, expected prize per bet and return rate; includes DLT additional-bet and compound-bet variants.</p>
+
+<div class="doc doc-object doc-module">
+
+<h2 id="lotterycn.odds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">odds</span>
+
+<a href="#lotterycn.odds" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+<div class="doc doc-children">
+
+<h3 id="lotterycn.odds-classes">Classes<a href="#lotterycn.odds-classes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.odds.LotteryPac" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LotteryPac</span>
+
+<a href="#lotterycn.odds.LotteryPac" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">LotteryPac</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>中奖概率与奖金期望计算框架。</p>
+<p>各彩种的奖级、中奖条件与奖金均以官方游戏规则为准（详见 config.py 中的规则来源），
+浮动奖按默认假设值计算期望，可用环境变量覆盖（键名见各配置类的 *_prize_env）。</p>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.odds.LotteryPac-functions">Methods:<a href="#lotterycn.odds.LotteryPac-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.pac_c" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">pac_c</span>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#lotterycn.odds.LotteryPac.pac_c" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">pac_c</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>组合数 C(n, k)。</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.pac_p" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">pac_p</span>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#lotterycn.odds.LotteryPac.pac_p" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">pac_p</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>排列数 P(n, k)。</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.hyper_c" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">hyper_c</span>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#lotterycn.odds.LotteryPac.hyper_c" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">hyper_c</span><span class="p">(</span><span class="n">total</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">drawn</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">pick</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">hit</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>单池超几何组合数：号码池 total 个、每期开出 drawn 个、投注 pick 个时，
+恰有 hit 个投注号码被开出的组合数。</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.lottery_pac_c" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">lottery_pac_c</span>
+
+<a href="#lotterycn.odds.LotteryPac.lottery_pac_c" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">lottery_pac_c</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">red_sum</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">red_aim</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">red_get</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">blue_sum</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">blue_aim</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">blue_get</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="int">int</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>双池乐透（红/蓝两区独立，如双色球、大乐透）命中 (red_get, blue_get) 的组合数。</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.get_prize_level" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_prize_level</span>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#lotterycn.odds.LotteryPac.get_prize_level" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_prize_level</span><span class="p">(</span><span class="n">prize_role</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">,</span> <span class="n">hit</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>根据命中情况反查奖级。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>prize_role</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dict, 奖级 → 命中组合集合的映射（如 {1: {(6, 1)}, ...}）。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>hit</code>
+            </td>
+            <td>
+                  <code><span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 实际命中情况（如 (红命中数, 蓝命中数)）。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 奖级（1 起）；未中奖返回 None。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.resolve_prize" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">resolve_prize</span>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#lotterycn.odds.LotteryPac.resolve_prize" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">resolve_prize</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">award</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">,</span> <span class="n">env_map</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="dict">dict</span></span><span class="p">],</span> <span class="n">level</span><span class="p">:</span> <span class="n"><span title="int">int</span></span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>解析某奖级的单注奖金：环境变量覆盖优先于默认值。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>award</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dict, 奖级 → 默认奖金映射。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>env_map</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="dict">dict</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional[dict], 奖级 → 环境变量名映射；None 表示无覆盖项。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>level</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 奖级。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>float, 单注奖金（元）。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.get_expectation_dataframe" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_expectation_dataframe</span>
+
+<a href="#lotterycn.odds.LotteryPac.get_expectation_dataframe" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_expectation_dataframe</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">bet_price</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>按投注方式汇总单注期望奖金（元）与返奖率。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>bet_price</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>float, 覆盖单注价格（如大乐透追加投注为 3 元）；None 时用配置默认。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>透传给 get_odds_dataframe（如 if_pool_over_800m、if_add_bet）。</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pandas.DataFrame
+columns: lottery_name, play_type, bet_price_yuan, expected_value_yuan, return_rate。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.LotteryPac.get_odds_dataframe" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_odds_dataframe</span>
+
+<a href="#lotterycn.odds.LotteryPac.get_odds_dataframe" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_odds_dataframe</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>各彩种子类实现：返回各奖级中奖组合数、概率与单注奖金明细表（抽象方法）。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.odds.SsqPac" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SsqPac</span>
+
+<a href="#lotterycn.odds.SsqPac" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">SsqPac</span><span class="p">()</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="LotteryPac (lotterycn.odds.LotteryPac)" href="#lotterycn.odds.LotteryPac">LotteryPac</a></code></p>
+
+        <p>双色球中奖概率与奖金期望。</p>
+
+<div class="doc doc-children">
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.odds.QlcPac" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">QlcPac</span>
+
+<a href="#lotterycn.odds.QlcPac" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">QlcPac</span><span class="p">()</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="LotteryPac (lotterycn.odds.LotteryPac)" href="#lotterycn.odds.LotteryPac">LotteryPac</a></code></p>
+
+        <p>七乐彩中奖概率与奖金期望。</p>
+<p>投注 7 个号码，开奖为 7 个基本号码 + 1 个特别号码（同池，特别号从剩余号码中开出），
+属于多类别超几何分布：命中 (基本号 r 个, 特别号 s 个) 的组合数为
+C(7, r) * C(1, s) * C(22, 7 - r - s)，总组合数为 C(30, 7)。</p>
+
+<div class="doc doc-children">
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.odds.KenoPac" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">KenoPac</span>
+
+<a href="#lotterycn.odds.KenoPac" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">KenoPac</span><span class="p">()</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="LotteryPac (lotterycn.odds.LotteryPac)" href="#lotterycn.odds.LotteryPac">LotteryPac</a></code></p>
+
+        <p>快乐8 中奖概率与奖金期望（选一至选十）。</p>
+
+<div class="doc doc-children">
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.odds.DltPac" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DltPac</span>
+
+<a href="#lotterycn.odds.DltPac" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">DltPac</span><span class="p">()</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="LotteryPac (lotterycn.odds.LotteryPac)" href="#lotterycn.odds.LotteryPac">LotteryPac</a></code></p>
+
+        <p>超级大乐透中奖概率与奖金期望（现行七个奖级规则）。</p>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.odds.DltPac-functions">Methods:<a href="#lotterycn.odds.DltPac-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.DltPac.get_odds_dataframe" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_odds_dataframe</span>
+
+<a href="#lotterycn.odds.DltPac.get_odds_dataframe" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_odds_dataframe</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">if_pool_over_800m</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">if_add_bet</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>追加投注（每注 3 元）仅参与浮动奖分配：浮动奖按基本投注对应奖金的 80% 兑付，固定奖不变。</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.odds.DltPac.get_expectation_dataframe" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_expectation_dataframe</span>
+
+<a href="#lotterycn.odds.DltPac.get_expectation_dataframe" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_expectation_dataframe</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">if_pool_over_800m</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">if_add_bet</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>追加投注单注 3 元：浮动奖按基本投注的 80% 兑付，固定奖不变。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.odds.DigitPac" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DigitPac</span>
+
+<a href="#lotterycn.odds.DigitPac" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">DigitPac</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="LotteryPac (lotterycn.odds.LotteryPac)" href="#lotterycn.odds.LotteryPac">LotteryPac</a></code></p>
+
+        <p>数字型彩票（福彩3D、排列3、排列5）中奖概率与奖金期望。</p>
+
+<div class="doc doc-children">
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.odds.QxcPac" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">QxcPac</span>
+
+<a href="#lotterycn.odds.QxcPac" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">QxcPac</span><span class="p">()</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="LotteryPac (lotterycn.odds.LotteryPac)" href="#lotterycn.odds.LotteryPac">LotteryPac</a></code></p>
+
+        <p>7星彩中奖概率与奖金期望。</p>
+<p>前六位每位 0-9（按位比对），最后一位 0-14，共 10^6 * 15 种组合。
+命中 (前区 f 位, 最后一位 l) 的组合数为 C(6, f) * 9^(6-f) * (1 if l else 14)。</p>
+
+<div class="doc doc-children">
+
+  </div>
+
+    </div>
+
+</div>
+<h3 id="lotterycn.odds-functions">Functions:<a href="#lotterycn.odds-functions" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-function">
+
+<h4 id="lotterycn.odds.load_prize_odds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">load_prize_odds</span>
+
+<a href="#lotterycn.odds.load_prize_odds" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">load_prize_odds</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;ssq&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the per-prize odds table for a game.</p>
+<p>Exact combinatorics on top of the current official rules (source URLs in
+<code>config.py</code>): winning combinations, probabilities, prize amounts, prize type.</p>
+<div class="admonition note">
+<p class="admonition-title">中文说明</p>
+<p>返回指定彩种各奖级的中奖组合数、中奖概率与奖金明细表——规则来源均为
+官网（cwl.gov.cn / lottery.gov.cn，见 config.py）。</p>
+</div>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lottery_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, must in ('ssq', 'qlc', 'kl8', '3d', 'dlt', 'pls', 'plw', 'qxc').</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;ssq&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>:param pick: int, only for kl8, 1-10, default None（返回全部玩法）.
+:param if_pool_over_800m: boolean, only for dlt, default False.
+:param if_add_bet: boolean, only for dlt, default False. 追加投注：浮动奖按 80% 兑付。</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pandas.DataFrame</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h4 id="lotterycn.odds.load_prize_expectation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">load_prize_expectation</span>
+
+<a href="#lotterycn.odds.load_prize_expectation" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">load_prize_expectation</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;ssq&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>返回指定彩种的单注期望奖金（元）与返奖率。</p>
+<p>浮动奖按 config.py 中的默认假设值计算（可用环境变量覆盖），
+因此返奖率为基于假设值的静态期望，    实际返奖率以当期开奖公告为准。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lottery_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, must in ('ssq', 'qlc', 'kl8', '3d', 'dlt', 'pls', 'plw', 'qxc').</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;ssq&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>:param pick: int, only for kl8, 1-10, default None（返回全部玩法）.
+:param if_pool_over_800m: boolean, only for dlt, default False.
+:param if_add_bet: boolean, only for dlt, default False. 追加投注：3 元/注，浮动奖按 80% 兑付。</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pandas.DataFrame</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+<h4 id="lotterycn.odds.load_dlt_compound_expectation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">load_dlt_compound_expectation</span>
+
+<a href="#lotterycn.odds.load_dlt_compound_expectation" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">load_dlt_compound_expectation</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">n_red</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">m_blue</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">if_pool_over_800m</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">if_add_bet</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>返回大乐透复式投注的注数、成本与整票期望。</p>
+<p>复式票选定 <span class="arithmatex">\(n_{red}\)</span> 个前区号码与 <span class="arithmatex">\(m_{blue}\)</span> 个后区号码，组合为
+<span class="arithmatex">\(\binom{n_{red}}{5}\times\binom{m_{blue}}{2}\)</span> 注单式。开奖后前区命中
+<span class="arithmatex">\(r\)</span> 个、后区命中 <span class="arithmatex">\(b\)</span> 个时：</p>
+<div class="arithmatex">\[P(r,b)=\frac{\binom{5}{r}\binom{30}{n_{red}-r}}{\binom{35}{n_{red}}}
+\times\frac{\binom{2}{b}\binom{10}{m_{blue}-b}}{\binom{12}{m_{blue}}}\]</div>
+<div class="arithmatex">\[\text{i 等奖中奖注数}=\sum_{(j,l)\in R_i}\binom{r}{j}\binom{n_{red}-r}{5-j}
+\binom{b}{l}\binom{m_{blue}-b}{2-l}\]</div>
+<div class="arithmatex">\[\mathbb{E}[\text{整票奖金}]=\sum_{r,b}P(r,b)\cdot\text{Prize}(r,b)\]</div>
+<p>由期望的线性性，整票期望恒等于 <strong>总注数 × 单式期望</strong>（返奖率不变），
+复式只改变成本与方差。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_red</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 前区号码个数，5-35。</p>
+              </div>
+            </td>
+            <td>
+                  <code>5</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>m_blue</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 后区号码个数，2-12。</p>
+              </div>
+            </td>
+            <td>
+                  <code>2</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>if_pool_over_800m</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>boolean, 奖池 ≥ 8 亿元档固定奖，default False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>if_add_bet</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>boolean, 复式追加（3 元/注，浮动奖 80%），default False.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pandas.DataFrame（单行）
+columns: lottery_name, n_red, m_blue, total_bets, cost_yuan, expected_prize_yuan, return_rate</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+              </article>
+            </div>
+
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+
+      </main>
+
+        <footer class="md-footer">
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 - present Ulion.Tse
+    </div>
+
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+
+</div>
+
+<div class="md-social">
+
+    <a href="https://github.com/UlionTse/lotterycn" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+
+</div>
+
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "content.tabs.link", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+
+        <script src="../../javascripts/mathjax.js"></script>
+
+        <script src="../../assets/mathjax/tex-chtml.js"></script>
+
+  </body>
+</html>

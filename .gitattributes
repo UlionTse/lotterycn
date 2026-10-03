@@ -1,0 +1,11 @@
+# 统一换行策略：仓库与所有平台的工作区一律 LF（Windows 也如此）；
+# 二进制文件不做任何转换。此文件使 core.autocrlf 的个人配置不再影响本仓库。
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.gz binary
+*.db binary

@@ -32,11 +32,11 @@ body:
       label: Python Version
       description: What version of python are you running?
       options:
-        - "3.9 (Default)"
-        - "3.11"
         - "3.10"
-        - ">=3.6, <=3.8"
-        - "<3.6"
+        - "3.11"
+        - "3.12"
+        - "3.13"
+        - "3.14"
     validations:
       required: true
   - type: dropdown
