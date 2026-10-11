@@ -1,11 +1,11 @@
 # coding=utf-8
 # author=Ulion.Tse
 
+import datetime
 import os
+import random
 import re
 import time
-import random
-import datetime
 from pathlib import Path
 from typing import Optional, Union, cast
 
@@ -13,7 +13,6 @@ import pandas
 
 from .data import GAME_ZH_NAMES, LotteryError, load_history_data
 from .utils import progress_bar
-
 
 DEFAULT_CACHE_DIR = Path.home() / ".lotterycn" / "history"
 

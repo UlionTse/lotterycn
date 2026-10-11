@@ -16,8 +16,8 @@
     由同一期随机开奖决定，与未来开奖号码之间不存在因果信息。请理性购彩。
 """
 
-import re
 import datetime
+import re
 from typing import Callable, Optional, cast
 
 import pandas
@@ -25,7 +25,6 @@ import pandas
 from .cache import CWL_PROJECTS, get_cache_path
 from .data import load_history_data, lottery_pool
 from .utils import LotteryError
-
 
 DETAIL_COLS = [
     "lottery_name",

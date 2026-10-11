@@ -17,17 +17,17 @@ lotterycn backtest <game> [--methods random,frequency] [--window 100] [--cached]
 `--cached` 使用本地缓存与增量更新（需首次联网建立缓存）。
 """
 
-import sys
 import argparse
+import sys
 
-from lotterycn.utils import LotteryError
-from lotterycn.draws import load_draw_detail, load_first_prize_by_province, load_prize_results
-from lotterycn.odds import load_prize_expectation, load_prize_odds
 from lotterycn.analysis import load_number_statistics
-from lotterycn.predict import load_predict_numbers
 from lotterycn.backtest import backtest as run_backtest
 from lotterycn.backtest import backtest_summary
 from lotterycn.check import load_check_result
+from lotterycn.draws import load_draw_detail, load_first_prize_by_province, load_prize_results
+from lotterycn.odds import load_prize_expectation, load_prize_odds
+from lotterycn.predict import load_predict_numbers
+from lotterycn.utils import LotteryError
 
 
 def _print(frame):

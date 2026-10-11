@@ -1,9 +1,9 @@
 # coding=utf-8
 # author=Ulion.Tse
 
+import random
 import sys
 import time
-import random
 from typing import Optional, Union
 
 import pandas
