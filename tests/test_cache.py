@@ -95,14 +95,19 @@ def test_detail_result_bypasses_cache(monkeypatch, tmp_path):
 
 
 def test_csl_not_incremental(monkeypatch, tmp_path):
-    # csl 系接口不支持日期区间：不做增量参数，全量刷新后去重
+    # csl 系接口不支持日期区间：不做增量参数，按页刷新后去重。
+    # 必须在网络层 mock（warmup/_csl）——体彩增量页步进不走 cache_mod.load_history_data，
+    # 旧式 mock 会放行真实请求（CI 境外跑道被体彩 WAF 拒为 HTTP 567）。
+    import lotterycn.data as data_mod
+
     seen = {}
 
-    def fake_load(lottery_name, **kwargs):
+    def fake__csl(lottery_name, page_no, **kwargs):
         seen.update(kwargs)
-        return _frame([["dlt", "超级大乐透", "26001", "2026-01-01", "01,05,12,18,27", "03,08"]])
+        return _csl_page([["超级大乐透", "26001", "2026-01-01(四)", "01,05,12,18,27 03,08"]])
 
-    monkeypatch.setattr(cache_mod, "load_history_data", fake_load)
+    monkeypatch.setattr(data_mod._cl, "csl_warmup", lambda **kwargs: 1)
+    monkeypatch.setattr(data_mod._cl, "_csl", fake__csl)
     cache_dir = str(tmp_path / "cache")
     load_cached_history_data("dlt", cache_dir=cache_dir)
     load_cached_history_data("dlt", cache_dir=cache_dir)
