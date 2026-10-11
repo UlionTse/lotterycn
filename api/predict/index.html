@@ -1,0 +1,2963 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <meta name="description" content="A Python library for enjoyable analysis of Chinese welfare & sports lotteries">
+
+        <link rel="canonical" href="https://uliontse.github.io/lotterycn/api/predict/">
+
+        <link rel="prev" href="../analysis/">
+
+        <link rel="next" href="../backtest/">
+
+          <link rel="alternate" href="./" hreflang="en">
+
+          <link rel="alternate" href="../../zh/api/predict/" hreflang="zh">
+
+      <link rel="icon" href="../../assets/lotterycn_mark.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+
+        <title>predict - LotteryCN</title>
+
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"JetBrains Mono"}</style>
+
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+  </head>
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="teal">
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+        <a href="#predict-number-generation-strategies" class="md-skip">
+          Skip to content
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="LotteryCN" class="md-header__button md-logo" aria-label="LotteryCN" data-md-component="logo">
+
+  <img src="../../assets/lotterycn_mark.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LotteryCN
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              predict
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+        <form class="md-header__option" data-md-component="palette">
+
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+
+</form>
+
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+      <div class="md-header__option">
+  <div class="md-select">
+
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+
+          <li class="md-select__item">
+            <a href="../../zh/api/predict/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+
+      </ul>
+    </div>
+  </div>
+</div>
+
+        <label class="md-header__button md-icon" for="__search">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div class="md-header__source">
+        <a href="https://github.com/UlionTse/lotterycn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    UlionTse/lotterycn
+  </div>
+</a>
+      </div>
+
+  </nav>
+
+</header>
+
+    <div class="md-container" data-md-component="container">
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="LotteryCN" class="md-nav__button md-logo" aria-label="LotteryCN" data-md-component="logo">
+
+  <img src="../../assets/lotterycn_mark.png" alt="logo">
+
+    </a>
+    LotteryCN
+  </label>
+
+    <div class="md-nav__source">
+      <a href="https://github.com/UlionTse/lotterycn" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    UlionTse/lotterycn
+  </div>
+</a>
+    </div>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    Home
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../../games/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    Games & Rules
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../../strategies/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    Strategies
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+
+  <span class="md-ellipsis">
+
+    API Reference
+
+  </span>
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+
+    API Reference
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    data
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../odds/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    odds
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../check/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    check
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../analysis/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    analysis
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item md-nav__item--active">
+
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+
+  <span class="md-ellipsis">
+
+    predict
+
+  </span>
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+
+      <a href="./" class="md-nav__link md-nav__link--active">
+
+  <span class="md-ellipsis">
+
+    predict
+
+  </span>
+
+      </a>
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#lotterycn.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="predict">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Classes
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.BasePredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        BasePredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="BasePredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.BasePredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.BasePredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RandomPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        RandomPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="RandomPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RandomPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RandomPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FrequencyPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        FrequencyPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="FrequencyPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FrequencyPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FrequencyPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.OmissionPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        OmissionPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="OmissionPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.OmissionPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.OmissionPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.DeviationPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        DeviationPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="DeviationPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.DeviationPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.DeviationPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RepeatNeighborPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        RepeatNeighborPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="RepeatNeighborPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RepeatNeighborPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RepeatNeighborPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TrendPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        TrendPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="TrendPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TrendPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TrendPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TailPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        TailPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="TailPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TailPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TailPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.MarkovPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        MarkovPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="MarkovPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.MarkovPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.MarkovPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.Markov2Predictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Markov2Predictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Markov2Predictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.Markov2Predictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.Markov2Predictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FilterPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        FilterPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="FilterPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FilterPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FilterPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.EnsemblePredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        EnsemblePredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="EnsemblePredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.EnsemblePredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.EnsemblePredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Functions:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Functions:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.load_predict_numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_predict_numbers
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../backtest/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    backtest
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../draws/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    draws
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    cache
+
+  </span>
+
+      </a>
+    </li>
+
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+
+  <span class="md-ellipsis">
+
+    cli
+
+  </span>
+
+      </a>
+    </li>
+
+          </ul>
+        </nav>
+
+    </li>
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#lotterycn.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="predict">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Classes
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Classes">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.BasePredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        BasePredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="BasePredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.BasePredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.BasePredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RandomPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        RandomPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="RandomPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RandomPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RandomPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FrequencyPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        FrequencyPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="FrequencyPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FrequencyPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FrequencyPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.OmissionPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        OmissionPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="OmissionPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.OmissionPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.OmissionPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.DeviationPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        DeviationPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="DeviationPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.DeviationPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.DeviationPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RepeatNeighborPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        RepeatNeighborPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="RepeatNeighborPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RepeatNeighborPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.RepeatNeighborPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TrendPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        TrendPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="TrendPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TrendPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TrendPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TailPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        TailPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="TailPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TailPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.TailPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.MarkovPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        MarkovPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="MarkovPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.MarkovPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.MarkovPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.Markov2Predictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Markov2Predictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Markov2Predictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.Markov2Predictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.Markov2Predictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FilterPredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        FilterPredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="FilterPredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FilterPredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.FilterPredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.EnsemblePredictor" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        EnsemblePredictor
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="EnsemblePredictor">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.EnsemblePredictor-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Methods:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Methods:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.EnsemblePredictor.predict" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        predict
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Functions:
+
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Functions:">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#lotterycn.predict.load_predict_numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        load_predict_numbers
+
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+            <div class="md-content" data-md-component="content">
+
+              <article class="md-content__inner md-typeset">
+
+<h1 id="predict-number-generation-strategies">predict — Number-generation strategies<a class="headerlink" href="#predict-number-generation-strategies" title="Permanent link">&para;</a></h1>
+<p>Strategies are pure-injection: declared via the <code>needs_history</code> / <code>method</code> / <code>aliases</code> class attributes and auto-registered by the base <code>__init_subclass__</code>; the <code>load_predict_numbers</code> factory resolves them and injects history data.</p>
+<div class="admonition warning">
+<p class="admonition-title">For entertainment only — no predictive power</p>
+<p>Lottery draws are independent random events; every strategy has exactly the same expected value as the <code>random</code> baseline.</p>
+</div>
+
+<div class="doc doc-object doc-module">
+
+<h2 id="lotterycn.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">predict</span>
+
+<a href="#lotterycn.predict" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>选号策略集（娱乐与教学用途）。</p>
+<div class="admonition warning">
+<p class="admonition-title">仅供娱乐，不构成任何预测力</p>
+<p>彩票开奖为独立随机事件，以下任何策略都不具备真实预测力，任何一注号码的
+中奖概率与随机选号完全相同。本模块仅提供统计选号参考与教学示例；
+<code>random</code> 为基线策略，任何策略都应先与它对比（可用 <code>lotterycn.backtest</code>
+复现实验）。请理性购彩。</p>
+</div>
+<p>策略来源（社区彩票圈/股票分析框架的平移，均无真实预测力）：
+    随机基线      random
+    走势图派      frequency（冷热）、omission（遗漏回补）、tail（尾数）、trend（和值均线通道）
+    形态派        filter（奇偶/大小/质合/012路/三区比/AC值/连号/杀号 可组合缩水）
+    序列派        markov（一阶）、markov2（二阶，稀疏性教学）、repeat（重号/邻号/斜连号）
+    统计派        deviation（卡方偏离度）
+    集成派        ensemble（多策略投票）</p>
+<p>设计约定：策略类是"纯注入"的——构造器不做任何网络 IO，历史数据由
+<code>load_predict_numbers</code> 工厂统一解析并注入（子类通过 <code>needs_history</code>
+声明是否依赖历史，通过 <code>aliases</code> 声明别名，两者均由基类自动注册）。
+需要历史数据的子类调用 <code>self._require_history()</code>。</p>
+
+<div class="doc doc-children">
+
+<h3 id="lotterycn.predict-classes">Classes<a href="#lotterycn.predict-classes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.BasePredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">BasePredictor</span>
+
+<a href="#lotterycn.predict.BasePredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">BasePredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>策略基类（纯注入，构造器零 IO，torch Layer 风格）。</p>
+<p>子类声明三个类属性，注册由基类 <code>__init_subclass__</code> 自动完成：
+    needs_history — 是否依赖历史数据（工厂据此决定是否联网拉取并注入）；
+    method        — 输出 DataFrame 的 method 列标签，同时作为注册键；
+    aliases       — 别名 → 策略参数覆盖（可选）。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lottery_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, must in NUMBER_POOLS.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;ssq&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>history</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="pandas.DataFrame">DataFrame</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pandas.DataFrame, 历史开奖数据；由工厂注入或调用方显式传入。
+不依赖历史的子类（needs_history = False）可为 None。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.BasePredictor-functions">Methods:<a href="#lotterycn.predict.BasePredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.BasePredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.BasePredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>生成一注选号（抽象方法，各策略子类实现）。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.RandomPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">RandomPredictor</span>
+
+<a href="#lotterycn.predict.RandomPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">RandomPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>基线策略：均匀随机（等价 load_random_data）。</p>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.RandomPredictor-functions">Methods:<a href="#lotterycn.predict.RandomPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.RandomPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.RandomPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>均匀随机生成选号（random 基线）。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.FrequencyPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">FrequencyPredictor</span>
+
+<a href="#lotterycn.predict.FrequencyPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">FrequencyPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recent_n</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'hot'</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>冷热号策略（动量）：按近 N 期出现频率取号。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>recent_n</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 滑动窗口期数，None 表示全历史。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, 'hot' 取高频头部，'cold' 取低频头部。</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;hot&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>explore_ratio</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>float, 0~1。0 为确定性取头部 k 个；越大越随机。</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.5</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.FrequencyPredictor-functions">Methods:<a href="#lotterycn.predict.FrequencyPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.FrequencyPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.FrequencyPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>按滑动窗口频率得分选号：mode 控制冷/热，explore_ratio 控制探索随机性。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.OmissionPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OmissionPredictor</span>
+
+<a href="#lotterycn.predict.OmissionPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">OmissionPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recent_n</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>遗漏回补策略（均值回归）：按"当前遗漏 / 平均遗漏"的偏移度取号。</p>
+<p>直觉：某号码当前连续未出期数远超其历史平均遗漏时，社区称之为"遗漏
+回补"。数学真相：独立开奖下这仍是均匀抽样的另一种表达，不改变概率。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>recent_n</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 计算平均遗漏的窗口期数，None 表示全历史。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.OmissionPredictor-functions">Methods:<a href="#lotterycn.predict.OmissionPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.OmissionPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.OmissionPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>遗漏回补选号：当前遗漏 / 平均遗漏比值越高越优先（热后转冷）。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.DeviationPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DeviationPredictor</span>
+
+<a href="#lotterycn.predict.DeviationPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">DeviationPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recent_n</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'hot'</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>卡方偏离度策略：按 (实际频次 - 期望频次)² / 期望频次 取号。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>recent_n</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 窗口期数，None 表示全历史。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>side</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, 'hot' 取正偏离头部（实际多于期望），'cold' 取负偏离头部。</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;hot&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.DeviationPredictor-functions">Methods:<a href="#lotterycn.predict.DeviationPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.DeviationPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.DeviationPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>卡方偏离选号：按 (实际-期望)²/期望 的偏离度选号，side 控制冷/热方向。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.RepeatNeighborPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">RepeatNeighborPredictor</span>
+
+<a href="#lotterycn.predict.RepeatNeighborPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">RepeatNeighborPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">repeat_weight</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">neighbor_weight</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">jump_weight</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>重号/邻号/斜连号策略：按与最近两期号码的邻近关系打分。</p>
+<p>score(n) = repeat_weight·[n ∈ 上期] + neighbor_weight·[n 与上期某号相差 1]
+           + jump_weight·[n 与上上期某号相差 1]（斜连号）。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>repeat_weight</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>float, 重号权重。</p>
+              </div>
+            </td>
+            <td>
+                  <code>2.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>neighbor_weight</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>float, 邻号权重。</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>jump_weight</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>float, 斜连号（上上期 ±1）权重。</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.RepeatNeighborPredictor-functions">Methods:<a href="#lotterycn.predict.RepeatNeighborPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.RepeatNeighborPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.RepeatNeighborPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>重号 / 邻号 / 斜连号三权重打分选号。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.TrendPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TrendPredictor</span>
+
+<a href="#lotterycn.predict.TrendPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">TrendPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">k_sigma</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">max_trials</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>和值均线通道策略（股票均线框架平移）：按和值的 MA ± k·σ 生成和值带。</p>
+<p>随机候选的和值落入带内才保留。数学真相：和值序列无趋势，
+带只是历史分布的描述。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>window</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 均线与波动率计算的窗口期数。</p>
+              </div>
+            </td>
+            <td>
+                  <code>10</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>k_sigma</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>float, 通道宽度系数（MA ± k·σ）。</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_trials</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 最大尝试次数。</p>
+              </div>
+            </td>
+            <td>
+                  <code>10000</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.TrendPredictor-functions">Methods:<a href="#lotterycn.predict.TrendPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.TrendPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.TrendPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>和值均线通道选号：随机候选的和值须落入 MA ± k·σ 才保留。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.TailPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TailPredictor</span>
+
+<a href="#lotterycn.predict.TailPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">TailPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recent_n</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'hot'</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">tail_count</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>尾数策略：先按尾数（号码 % 10）频率选尾集合，再在选中尾内取号。</p>
+<p>仅作用于红球/前区；蓝球按普通频率取号。数字型彩种每位 0-9，
+尾即号码本身，策略退化为号码级频率。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>tail_count</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 选用的尾数个数；None 时按号码池与注数自动推导。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.TailPredictor-functions">Methods:<a href="#lotterycn.predict.TailPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.TailPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.TailPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>两级尾数选号：先按尾数频率选尾，再在选中尾内取号。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.MarkovPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">MarkovPredictor</span>
+
+<a href="#lotterycn.predict.MarkovPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">MarkovPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>一阶马尔可夫策略：按 P(本期出现 | 上期出现/未出现) 的转移概率采样。</p>
+<p>教学要点：对独立开奖，转移概率收敛到边际频率，本策略退化为频率法，
+用于直观验证"历史模式无预测力"。</p>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.MarkovPredictor-functions">Methods:<a href="#lotterycn.predict.MarkovPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.MarkovPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.MarkovPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>一阶转移采样选号：按上期出现 / 未出现的转移概率采样，独立时退化为频率。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.Markov2Predictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Markov2Predictor</span>
+
+<a href="#lotterycn.predict.Markov2Predictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">Markov2Predictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>二阶马尔可夫策略：状态为上两期的出现/未出现组合（4 态）。</p>
+<p>教学要点：样本在高阶状态下迅速稀疏，Laplace 平滑后大量状态退化为
+均匀分布——直观展示"历史模式越复杂，越接近随机"。</p>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.Markov2Predictor-functions">Methods:<a href="#lotterycn.predict.Markov2Predictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.Markov2Predictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.Markov2Predictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>二阶转移采样选号：以上两期组合为状态（4 态），展示高阶状态稀疏后退化均匀。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.FilterPredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">FilterPredictor</span>
+
+<a href="#lotterycn.predict.FilterPredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">FilterPredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sum_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odd_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prime_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zone_ratio</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mod3_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ac_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">consecutive_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude_numbers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_trials</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>形态缩水策略：批量随机候选，按多组形态约束过滤。</p>
+<p>注意：过滤只改变选号的分布形态，不改变任何一注的中奖概率。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>sum_range</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 红球和值区间 (lo, hi)，None 不过滤。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>odd_range</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 红球奇数个数区间 (lo, hi)，None 不过滤。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>prime_range</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 红球质数个数区间 (lo, hi)，None 不过滤。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zone_ratio</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 三区比（红球按号码池三等分的分布），精确匹配，如 (2, 2, 2)。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mod3_range</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 012 路分布（号码 % 3 的计数），精确匹配，如 (1, 3, 2)。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>ac_range</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, AC 值区间 (lo, hi)，None 不过滤。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>consecutive_range</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 连号对数区间 (lo, hi)，None 不过滤。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exclude_numbers</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>iterable, 杀号集合（命中的候选直接淘汰）。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_trials</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 最大尝试次数，防止过滤条件过严导致死循环。</p>
+              </div>
+            </td>
+            <td>
+                  <code>10000</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.FilterPredictor-functions">Methods:<a href="#lotterycn.predict.FilterPredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.FilterPredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.FilterPredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>可组合形态缩水选号：和值 / 奇偶 / 质合 / 三区比 / 012 路 / AC 值 / 连号 / 杀号约束下随机采样。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+<h4 id="lotterycn.predict.EnsemblePredictor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">EnsemblePredictor</span>
+
+<a href="#lotterycn.predict.EnsemblePredictor" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">EnsemblePredictor</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">members</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span> <span class="o">=</span> <span class="p">(</span><span class="s1">'frequency'</span><span class="p">,</span> <span class="s1">'omission'</span><span class="p">,</span> <span class="s1">'repeat'</span><span class="p">),</span> <span class="n">votes_min</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BasePredictor (lotterycn.predict.BasePredictor)" href="#lotterycn.predict.BasePredictor">BasePredictor</a></code></p>
+
+        <p>集成投票策略：多个子策略各出 top-k，按号码得票数取前 k。</p>
+<p>集成不改变期望——各子策略无预测力，投票亦然；提供它是为了
+把"多策略共振"这一社区习惯变成可复现的实验。</p>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>members</code>
+            </td>
+            <td>
+                  <code><span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>tuple, 子策略 method 名（不能含 'ensemble'，避免递归）。</p>
+              </div>
+            </td>
+            <td>
+                  <code>(&#39;frequency&#39;, &#39;omission&#39;, &#39;repeat&#39;)</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>votes_min</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 入选号码的最少得票数；不足 k 个时按票数补齐。</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+<div class="doc doc-children">
+
+<h5 id="lotterycn.predict.EnsemblePredictor-functions">Methods:<a href="#lotterycn.predict.EnsemblePredictor-functions" class="headerlink" title="Permanent link">&para;</a></h5>
+
+<div class="doc doc-object doc-function">
+
+<h6 id="lotterycn.predict.EnsemblePredictor.predict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">predict</span>
+
+<a href="#lotterycn.predict.EnsemblePredictor.predict" class="headerlink" title="Permanent link">&para;</a></h6>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">predict</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>多策略投票选号：成员各出 top-k，按号码得票排序取前 amount 注。</p>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+<h3 id="lotterycn.predict-functions">Functions:<a href="#lotterycn.predict-functions" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-function">
+
+<h4 id="lotterycn.predict.load_predict_numbers" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">load_predict_numbers</span>
+
+<a href="#lotterycn.predict.load_predict_numbers" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">load_predict_numbers</span><span class="p">(</span><span class="n">lottery_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'ssq'</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'random'</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pandas.DataFrame">DataFrame</span></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate numbers with a strategy. Output mirrors load_random_data
+(plus a <code>method</code> column).</p>
+<p>⚠️ Entertainment only — every strategy has exactly the same expected value
+as the <code>random</code> baseline (verify with <code>lotterycn.backtest</code>).</p>
+<div class="admonition note">
+<p class="admonition-title">中文说明</p>
+<p>按指定策略生成选号。可用策略：random 基线 / frequency 冷热（别名
+hot/cold）/ omission 遗漏回补（chase）/ deviation 卡方偏离（chisq）/
+repeat 重邻斜 / trend 和值均线 / tail 尾数 / markov / markov2 /
+filter 形态缩水（和值/奇偶/质合/三区/012路/AC值/连号/杀号）/
+ensemble 多策略投票。<code>history=</code> 注入 DataFrame 可完全离线；
+否则按需拉取（支持 if_cached）。</p>
+</div>
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lottery_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, must in ('ssq', 'qlc', 'kl8', '3d', 'dlt', 'pls', 'plw', 'qxc').</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;ssq&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>method</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, 'random' | 'frequency'（别名 'hot'/'cold'）| 'omission'（'chase'）
+| 'deviation'（'chisq'）| 'repeat' | 'trend' | 'tail' | 'markov' | 'markov2'
+| 'filter' | 'ensemble'.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;random&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>amount</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, 生成注数，default 1.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>history</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="pandas.DataFrame">DataFrame</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pandas.DataFrame, 显式注入历史数据（离线使用）；为 None 且策略
+需要历史时按 **kwargs 中的数据获取参数联网拉取。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>两类参数——
+策略参数：recent_n / mode / explore_ratio（frequency/omission/deviation/tail），
+          repeat_weight / neighbor_weight / jump_weight（repeat），
+          window / k_sigma（trend），members / votes_min（ensemble），
+          sum_range / odd_range / prime_range / zone_ratio / mod3_range /
+          ac_range / consecutive_range / exclude_numbers / max_trials（filter）；
+数据获取参数（仅拉取时生效）：if_cached / timeout / proxies / max_retries 等。</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>pandas.DataFrame</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+  </div>
+
+    </div>
+
+</div>
+
+              </article>
+            </div>
+
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+
+      </main>
+
+        <footer class="md-footer">
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 - present Ulion.Tse
+    </div>
+
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+
+</div>
+
+<div class="md-social">
+
+    <a href="https://github.com/UlionTse/lotterycn" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+
+</div>
+
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "content.tabs.link", "navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+
+        <script src="../../javascripts/mathjax.js"></script>
+
+        <script src="../../assets/mathjax/tex-chtml.js"></script>
+
+  </body>
+</html>

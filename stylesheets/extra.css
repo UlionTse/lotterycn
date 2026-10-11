@@ -1,0 +1,170 @@
+/* ==========================================================================
+   LotteryCN docs — custom layer (borrowed from fastapi / pydantic / polars
+   documentation practices)
+   ========================================================================== */
+
+/* ---- Fonts -----------------------------------------------------------------
+   中文正文：阿里巴巴普惠体（Alibaba PuHuiTi，官方声明免费商用），字体栈优先，
+   本机已安装的访客直接呈现；未安装时回落 PingFang SC / Microsoft YaHei。
+   可选 Web 加载：启用下方 @font-face（jsDelivr 上的普惠体 webfont 打包），
+   启用前请核对相应打包的再分发条款。
+---------------------------------------------------------------------------- */
+body {
+    font-family: "Alibaba PuHuiTi 3.0", "Alibaba PuHuiTi", "阿里巴巴普惠体",
+        "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+}
+
+@font-face {
+    /* 阿里巴巴普惠体 3.0 55 Regular（自托管，随包附 Apache 2.0 LICENSE） */
+    font-family: "Alibaba PuHuiTi 3.0";
+    src: url("../assets/fonts/puhuiti/AlibabaPuHuiTi-3-55-Regular.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ---- Code style: Monaco 优先 + 斜体（Apple Monaco italic 风格）--------------
+   删除下方 font-style 行即可回到常规体。*/
+.md-typeset code,
+.md-typeset pre,
+.md-typeset .doc-signature,
+.md-typeset kbd {
+    font-family: Monaco, "JetBrains Mono", Menlo, Consolas, "Courier New", monospace;
+    font-style: italic;
+}
+
+/* ---- 全站斜体（含 UI）：腾讯体斜体感。中英文均为浏览器合成斜体 ---- */
+body {
+    font-style: italic;
+}
+
+/* ---- Typography: 治"挤在一起" ---------------------------------------------- */
+.md-typeset {
+    line-height: 1.8;
+    font-size: 0.82rem;
+}
+
+.md-typeset p {
+    margin: 0.9em 0;
+}
+
+.md-typeset h1 {
+    font-weight: 700;
+    margin-bottom: 0.8em;
+}
+
+.md-typeset h2 {
+    font-weight: 700;
+    margin-top: 1.8em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* ---- API 文档（mkdocstrings）------------------------------------------------ */
+/* 类/函数块之间的呼吸感 */
+.md-typeset .doc {
+    margin-bottom: 2em;
+}
+
+/* 签名块：独立代码块样式 */
+.md-typeset .doc-signature,
+.md-typeset pre + .doc-signature {
+    border-left: 3px solid var(--md-primary-fg-color);
+    padding-left: 0.6em;
+}
+
+/* 参数/返回值表格：紧凑但不拥挤 */
+.md-typeset .doc table:not([class]) {
+    font-size: 0.72rem;
+    display: table;
+    width: 100%;
+}
+
+.md-typeset .doc table:not([class]) th {
+    white-space: nowrap;
+}
+
+/* 隐藏 mkdocstrings 默认的对象路径小标题噪音，保留锚点 */
+.md-typeset .doc-object-name {
+    font-weight: 700;
+}
+
+/* ---- 表格 ------------------------------------------------------------------- */
+.md-typeset table:not([class]) {
+    box-shadow: none;
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* ---- Admonition（免责声明等）------------------------------------------------- */
+.md-typeset .admonition,
+.md-typeset details {
+    margin: 1.2em 0;
+    font-size: 0.78rem;
+}
+
+/* ---- Hero（首页）------------------------------------------------------------- */
+.md-typeset .hero {
+    text-align: center;
+    padding: 2em 0;
+    /* 浅蓝绿渐变底：呼应页眉 #155799→#159957，白底上仅一层极淡色晕 */
+    background: linear-gradient(120deg, rgba(21, 87, 153, 0.08), rgba(21, 153, 87, 0.08));
+    border-radius: 8px;
+}
+
+.md-typeset .hero .logo {
+    height: 120px;
+    margin-bottom: 0.5em;
+}
+
+.md-typeset .grid.cards > ul {
+    grid-template-columns: repeat(2, 1fr);   /* 锁 2×2：默认 auto-fill 会把 4 卡排成一行 */
+}
+
+.md-typeset .grid.cards > ul > li {
+    border: 1px solid var(--md-default-fg-color--lightest);
+    background: linear-gradient(120deg, rgba(21, 87, 153, 0.04), rgba(21, 153, 87, 0.04));
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+    border-color: rgba(21, 153, 87, 0.55);
+    box-shadow: 0 4px 14px rgba(21, 87, 153, 0.14);
+    background: linear-gradient(120deg, rgba(21, 87, 153, 0.09), rgba(21, 153, 87, 0.09));
+}
+
+@media screen and (max-width: 44.9em) {
+    .md-typeset .grid.cards > ul {
+        grid-template-columns: 1fr;          /* 窄屏回退单列 */
+    }
+}
+
+/* ---- Header gradient -------------------------------------------------------
+   与 uliontse.github.io 首页 .page-header 同一渐变：
+       background-image: linear-gradient(120deg, #155799, #159957);
+   这里接管 mkdocs 的页眉，并把 primary 变量对齐到渐变起点，使搜索框、主按钮
+   等同色系 UI 保持一致。渐变是深蓝→绿的中性冷色，logo 的红球与亮蓝球都能读出来。
+   若只想保留 mkdocs 自带配色，删掉本节即可。 */
+html[data-md-color-primary] {
+    --md-primary-fg-color: #155799;
+    --md-primary-fg-color--light: #1f6db3;
+    --md-primary-fg-color--dark: #0f3f6e;
+}
+
+.md-header,
+.md-tabs {
+    background-color: #159957;
+    background-image: linear-gradient(120deg, #155799, #159957);
+}
+
+/* ---- Footer gradient -------------------------------------------------------
+   红紫渐变：呼应 logo 的红蓝双球，与页眉蓝绿形成互补点缀。
+   取 Material pink-700→purple-700 深档，页脚白字对比度 >7:1；
+   .md-footer-meta 默认带更深底色，需透明化让渐变贯穿版权条。 */
+.md-footer {
+    background-color: #6a1b9a;
+    background-image: linear-gradient(120deg, #ad1457, #6a1b9a);
+}
+
+.md-footer-meta {
+    background-color: transparent;
+}
