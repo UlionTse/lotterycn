@@ -45,8 +45,11 @@
 ### 1.2 GitHub 仓库设置
 
 - **Environments**：名为 `pypi` 的环境（与 `release.yml` 的 `environment: pypi` 和
-  TP 登记逐字符一致）。首次 Release workflow 运行时会自动创建，无需手动建；
-  可选加固：Deployment branch and tag policies 限定 `v*`，或加 required reviewers。
+  TP 登记逐字符一致）。首次 Release workflow 运行时会自动创建，无需手动建。
+  注意 **Deployment protection rules**：若启用了 Required reviewers（新建 environment
+  的常见配置），每次发布 run 会停在 "Review deployments" 等待人工批准（操作见 §3
+  步骤 5）；不想要此手工环节，在 Settings → Environments → pypi 里删除该保护规则。
+  Deployment branch and tag policies 限定 `v*` 是另一项可选加固，与审批互不影响。
 - **Pages**：Source 选 **gh-pages 分支 + / (root)**（`docs.yml` 每次 push main 自动
   `mkdocs gh-deploy` 重建，保持 **Deploy from a branch** 模式，不要选 "GitHub Actions"）。
 - **Actions 权限**：保持默认受限即可；`release.yml` 已显式声明
@@ -94,8 +97,18 @@ git push origin v1.0.1
 #    → Actions 页出现 "Prepare Release"：Guard → Extract notes → Create draft release
 #    → Releases 页出现草稿 "lotterycn 1.0.1"，notes 为英文段 + 中文段
 
-# 4) 检查草稿 → 点击 "Publish release" —— 此步触发 PyPI 上传
-#    → Actions 页出现 "Release" workflow：Guard → Build → Publish to PyPI
+# 4) 发布草稿（在 Releases 页面操作；草稿仅维护者登录后可见）：
+#    ① 仓库页 → Releases → 点开 Draft 状态的 "lotterycn 1.0.1"
+#    ② 点右上角铅笔图标 ✏️（Edit release）进入编辑表单
+#    ③ 确认发布信息：Tag = v1.0.1、Title = lotterycn 1.0.1、notes 为
+#       英文段 + 分隔线 + 中文段（需要微调在此编辑）
+#    ④ 拉到表单底部 → 点绿色 "Publish release" 按钮 —— 触发 Release workflow
+#
+# 5) 人工批准环境部署（若 pypi 环境启用了 Required reviewers）
+#    → Actions 页 Release run 顶部出现 "Review deployments" 按钮
+#    → 勾选 pypi 环境 → 点击 "Approve and deploy"
+#    → job 开始执行：Guard → Build → Publish to PyPI
+#    （未启用 Required reviewers 时无此步，job 自动开始）
 ```
 
 补充说明：
@@ -139,6 +152,7 @@ git push origin v1.0.1
 | Extract notes 步骤失败 | CHANGELOG 无对应版本段落 | 补双语段落 → 删 tag 重打 |
 | 草稿 notes 有误 | 抽取内容需微调 | 直接编辑草稿再 Publish；或删掉草稿重跑 workflow |
 | Publish 前想撤回 | 草稿误建 | Delete release（草稿不触发任何上传）→ 修正后重走 §3 步骤 3-4 |
+| run 停在 "Review deployments"，无任何步骤执行 | pypi 环境启用了 Required reviewers | run 页点 **Review deployments** → 勾选 `pypi` → **Approve and deploy**；不想要手工批准：Settings → Environments → pypi 删除该保护规则 |
 | Publish 步骤 401/403 | Trusted Publisher 未登记或四要素不符 | 核对 §1.1 四要素 → **Re-run failed jobs** |
 | 同版本号上传冲突 | PyPI 版本不可覆盖、不可删除重传 | 内容有问题：**yank** 该版本 + 修复后发新版本，绝不重传同号 |
 | tag 打错且草稿已建 | — | 删草稿 + 删 tag 重打；**若已上传 PyPI 则只能往前发新版本** |
@@ -147,7 +161,8 @@ git push origin v1.0.1
 ## 6. 后续小版本（1.0.2 起同构）
 
 1. 改 `__version__` → 2. CHANGELOG 双语增段 → 3. 本地全绿 → 4. commit / push main、CI 绿 →
-5. `git tag -a vX.Y.Z` 并推送（生成双语草稿）→ 6. Publish Release → 7. 按 §4 验证。
+5. `git tag -a vX.Y.Z` 并推送（生成双语草稿）→ 6. Publish Release →（如启用 Required reviewers）
+   在 run 页 Approve and deploy → 7. 按 §4 验证。
 
 ## 7. 可选增强（暂未实现）
 
