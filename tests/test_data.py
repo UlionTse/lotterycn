@@ -1,9 +1,16 @@
 # coding=utf-8
 # author=Ulion.Tse
 
-from lotterycn.data import load_random_data, lottery_pool
+from lotterycn.data import GAME_ZH_NAMES, load_random_data, lottery_pool
 
-CL_COLS = ["lottery_name", "lottery_order", "lottery_date", "lottery_red", "lottery_blue"]
+CL_COLS = [
+    "lottery_name",
+    "lottery_zh_name",
+    "lottery_order",
+    "lottery_date",
+    "lottery_red",
+    "lottery_blue",
+]
 
 
 def test_lottery_pool():
@@ -16,6 +23,7 @@ def test_load_random_data_shape():
         assert len(frame) == 3
         assert list(frame.columns) == CL_COLS
         assert (frame["lottery_name"] == lottery_name).all()
+        assert (frame["lottery_zh_name"] == GAME_ZH_NAMES[lottery_name]).all()
         assert list(frame["lottery_order"]) == [0, 1, 2]
 
 

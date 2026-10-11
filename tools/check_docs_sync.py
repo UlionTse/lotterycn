@@ -12,6 +12,7 @@
 
 用法：python tools/check_docs_sync.py    退出码 0=通过，1=存在违规。
 """
+
 import pathlib
 import re
 import sys
@@ -71,9 +72,7 @@ def check_cjk_in_english(problems):
             snippet = line.strip()
             if len(snippet) > 60:
                 snippet = snippet[:60] + "..."
-            problems.append(
-                f"[cjk] {page.relative_to(ROOT)}:{lineno} 英文页含中文：{snippet}"
-            )
+            problems.append(f"[cjk] {page.relative_to(ROOT)}:{lineno} 英文页含中文：{snippet}")
 
 
 def check_taglines(problems):
@@ -92,9 +91,7 @@ def check_banned_domains(problems):
         text = page.read_text(encoding="utf-8")
         for domain in _BANNED_DOMAINS:
             if domain in text:
-                problems.append(
-                    f"[domain] {page.relative_to(ROOT)} 暴露内部数据 API 域名：{domain}"
-                )
+                problems.append(f"[domain] {page.relative_to(ROOT)} 暴露内部数据 API 域名：{domain}")
 
 
 def main():

@@ -6,6 +6,7 @@
   路径，使语言切换器在本地 IDE 预览、离线打开、GitHub Pages 项目路径下
   全部可用。
 """
+
 import pathlib
 import re
 from urllib.parse import urlparse

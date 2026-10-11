@@ -281,6 +281,17 @@
 </li>
 
         <li class="md-nav__item">
+  <a href="#filter-shape-metric-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Filter shape-metric definitions
+
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
   <a href="#backtesting-verify-the-no-predictive-power-claim-yourself" class="md-nav__link">
     <span class="md-ellipsis">
 
@@ -475,6 +486,17 @@
 </li>
 
         <li class="md-nav__item">
+  <a href="#filter-shape-metric-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Filter shape-metric definitions
+
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
   <a href="#backtesting-verify-the-no-predictive-power-claim-yourself" class="md-nav__link">
     <span class="md-ellipsis">
 
@@ -577,7 +599,7 @@
 <td><code>filter</code></td>
 <td>—</td>
 <td>shape school</td>
-<td>Composable shrink engine: <code>sum_range</code>, <code>odd_range</code>, <code>prime_range</code>, <code>zone_ratio</code>, <code>mod3_range</code> (012-route), <code>ac_range</code>, <code>consecutive_range</code>, <code>exclude_numbers</code> (kill numbers)</td>
+<td>Composable shrink engine: <code>sum_range</code>, <code>odd_range</code>, <code>prime_range</code>, <code>ac_range</code>, <code>consecutive_range</code> (ranges), <code>zone_ratio</code> &amp; <code>mod3_range</code> (012-route, exact match), <code>exclude_numbers</code> (kill numbers)</td>
 </tr>
 <tr>
 <td><code>ensemble</code></td>
@@ -590,24 +612,92 @@
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lotterycn</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_predict_numbers</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">picks</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>          <span class="c1"># alias of frequency + mode=&#39;hot&#39;</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">chase</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;omission&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>     <span class="c1"># mean-reversion chase</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">dev</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;deviation&#39;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;cold&#39;</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">rep</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;repeat&#39;</span><span class="p">,</span> <span class="n">repeat_weight</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">band</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span> <span class="n">k_sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">shrink</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                              <span class="n">sum_range</span><span class="o">=</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">),</span> <span class="n">prime_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                              <span class="n">zone_ratio</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">exclude_numbers</span><span class="o">=</span><span class="p">{</span><span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">})</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">votes</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ensemble&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                             <span class="n">members</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">,</span> <span class="s1">&#39;omission&#39;</span><span class="p">,</span> <span class="s1">&#39;repeat&#39;</span><span class="p">))</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># method='hot' is an alias of frequency + mode='hot'</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">picks</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"hot"</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">chase</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"omission"</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># mean reversion</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">dev</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"deviation"</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">"cold"</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">rep</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"repeat"</span><span class="p">,</span> <span class="n">repeat_weight</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">band</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"trend"</span><span class="p">,</span> <span class="n">k_sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">shrink</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="s2">"ssq"</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">method</span><span class="o">=</span><span class="s2">"filter"</span><span class="p">,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">sum_range</span><span class="o">=</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">),</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">prime_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">zone_ratio</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">exclude_numbers</span><span class="o">=</span><span class="p">{</span><span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">},</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="p">)</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="n">votes</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="s2">"ssq"</span><span class="p">,</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="n">method</span><span class="o">=</span><span class="s2">"ensemble"</span><span class="p">,</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="n">amount</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="n">members</span><span class="o">=</span><span class="p">(</span><span class="s2">"frequency"</span><span class="p">,</span> <span class="s2">"omission"</span><span class="p">,</span> <span class="s2">"repeat"</span><span class="p">),</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="p">)</span>
 </span></code></pre></div>
 <p>Pass <code>history=</code> to inject a DataFrame and work fully offline; otherwise the factory fetches draw history (respects <code>if_cached=True</code>).</p>
+<h2 id="filter-shape-metric-definitions">Filter shape-metric definitions<a class="headerlink" href="#filter-shape-metric-definitions" title="Permanent link">&para;</a></h2>
+<p>All <code>*_range</code> filters are inclusive <code>(lo, hi)</code> intervals; <code>zone_ratio</code> and <code>mod3_range</code> are <strong>exact matches</strong> on the count triple.</p>
+<ul>
+<li><strong>AC value</strong> — number of distinct pairwise differences among the sorted unique numbers, minus (count − 1). Example: <code>{01,02,06,13,27,33}</code> has exactly 15 distinct pairwise differences, so AC = 15 − (6 − 1) = 10 (the theoretical maximum for 6 numbers); the fully consecutive <code>{01..06}</code> has only 5, so AC = 0.</li>
+<li><strong>Zone ratio (exact match)</strong> — the red pool is split into three zones; per-zone counts must equal the given <code>(zone1, zone2, zone3)</code> exactly. Zone boundaries per game:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Game (red pool)</th>
+<th>Zone 1</th>
+<th>Zone 2</th>
+<th>Zone 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ssq</code> (1-33)</td>
+<td>1-11</td>
+<td>12-22</td>
+<td>23-33</td>
+</tr>
+<tr>
+<td><code>qlc</code> (1-30)</td>
+<td>1-10</td>
+<td>11-20</td>
+<td>21-30</td>
+</tr>
+<tr>
+<td><code>kl8</code> (1-80)</td>
+<td>1-27</td>
+<td>28-54</td>
+<td>55-80</td>
+</tr>
+<tr>
+<td><code>dlt</code> (1-35)</td>
+<td>1-12</td>
+<td>13-24</td>
+<td>25-35</td>
+</tr>
+<tr>
+<td>digit games <code>3d</code>/<code>pls</code>/<code>plw</code>/<code>qxc</code> (0-9)</td>
+<td>0-3</td>
+<td>4-6</td>
+<td>7-9</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>012-route <code>mod3_range</code> (exact match)</strong> — counts of numbers ≡ 0 / 1 / 2 (mod 3) must equal the given triple exactly.</li>
+<li><strong>Primes</strong> — {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31} (1 is not prime).</li>
+<li><strong>Consecutive pairs</strong> — adjacent pairs (differ by exactly 1) among the sorted unique numbers.</li>
+</ul>
+<p>As with every strategy, filtering changes only the <em>shape</em> of the picked tickets — it never changes any ticket's winning probability.</p>
 <h2 id="backtesting-verify-the-no-predictive-power-claim-yourself">Backtesting — verify the "no predictive power" claim yourself<a class="headerlink" href="#backtesting-verify-the-no-predictive-power-claim-yourself" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lotterycn</span><span class="w"> </span><span class="kn">import</span> <span class="n">backtest</span><span class="p">,</span> <span class="n">backtest_summary</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">results</span> <span class="o">=</span> <span class="n">backtest</span><span class="p">(</span><span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="s1">&#39;omission&#39;</span><span class="p">,</span> <span class="s1">&#39;ensemble&#39;</span><span class="p">),</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                   <span class="n">lottery_name</span><span class="o">=</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">backtest_summary</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">results</span> <span class="o">=</span> <span class="n">backtest</span><span class="p">(</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s2">"random"</span><span class="p">,</span> <span class="s2">"hot"</span><span class="p">,</span> <span class="s2">"omission"</span><span class="p">,</span> <span class="s2">"ensemble"</span><span class="p">),</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">lottery_name</span><span class="o">=</span><span class="s2">"ssq"</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">window</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">backtest_summary</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
 </span></code></pre></div>
 <p>Each strategy is driven by the preceding <code>window</code> draws and evaluated against the next real draw (red/blue hit counts). The expected outcome — reproduced every time — is that all strategies perform on par with <code>random</code>. Community machine-learning attempts (LSTM/XGBoost on number sequences) reach the same conclusion: on a Pick-3-sized space (1/1000) an LSTM lands at ≈ 4.2‰ accuracy, i.e. the baseline. Any "significantly better than random" observation should be treated as overfitting or noise.</p>
 <h2 id="a-note-on-the-stock-analysis-analogy">A note on the stock-analysis analogy<a class="headerlink" href="#a-note-on-the-stock-analysis-analogy" title="Permanent link">&para;</a></h2>

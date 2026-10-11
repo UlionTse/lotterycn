@@ -7,6 +7,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 English | [简体中文](CHANGELOG_zh.md).
 
+## [1.0.1] - 2026-10-10
+
+### Added
+
+- Python 3.15 support: classifiers now cover 3.10–3.15 and the CI matrix tests all six
+  versions (3.13/3.14 were previously declared but never tested).
+- Release-driven publishing: on tag push, `prepare-release.yml` creates a bilingual
+  draft GitHub Release extracted from `CHANGELOG.md` / `CHANGELOG_zh.md` via the new
+  `tools/extract_changelog.py`; PyPI upload runs only when the Release is published
+  (`release.yml`). Both workflows guard that the tag matches `__version__`.
+- Filter shape-metric definitions documented (AC value, per-game zone boundaries,
+  012-route, primes, consecutive pairs) with unit tests locking the exact semantics
+  (`tests/test_predict.py`).
+- Inline comments added to the math-heavy parts of `predict.py` (sum band MA ± k·σ,
+  chi-square expectation, AC value, omission score, Efraimidis–Spirakis sampling).
+
+### Changed
+
+- READMEs (en/zh) restructured: table of contents added, documentation site links
+  promoted to the top (centered links + Docs badge), Python requirement stated as
+  3.10 – 3.15.
+- Code blocks in both READMEs and on the docs homepage reformatted to black-style
+  vertical calls (≤ 79 columns) so they no longer wrap mid-token on narrow screens.
+- RELEASE.md rewritten for the release-driven flow with a step-by-step publishing
+  tutorial; release notes are now generated instead of pasted by hand.
+- READMEs slimmed down: table of contents cut from 16 to 7 entries; games, strategies
+  and data sources merged into one section; Quickstart reduced to a single cached
+  end-to-end pipeline (mirrored on the docs homepage, which now also demonstrates the
+  winning check); API overview, caching, draw-details, floating-prize and statistics
+  sections removed — all fully documented on the docs site.
+- README openings de-duplicated: intro paragraph removed (tagline and the "Why
+  LotteryCN" bullets tell the story once); the four Why bullets and the docs homepage
+  grid cards reordered to follow the pipeline (data → math → strategies (core) →
+  pipeline); the docs homepage's mid-page rules paragraph folded into the
+  official-data card with the Games & Rules link, and Quickstart gained the same
+  pipeline lead-in.
+- Performance: `load_number_statistics` and the strategy predictors (frequency / tail /
+  omission / markov / markov2) now parse each draw once into occurrence matrices and
+  compute with vectorized numpy — full-history statistics run ≈ 250–380× faster
+  (ssq 3000 draws: 1.2s → 0.015s; kl8 8000 draws: 5.8s → 0.04s), with results verified
+  identical by pure-Python reference-implementation tests; backtest pre-parses actual
+  draws and resolves predictor classes once per method; `numpy` is now an explicit
+  dependency (compatible with pandas >= 2.3.3 and 3.x).
+- PEP 561 `py.typed` marker shipped via wheel package-data, so downstream `mypy`
+  users get inline types; PR template added; pre-commit upgraded to ruff v0.17.0
+  (ruff + ruff-format) with a mypy hook pinned to the project dependency set.
+- History / random / strategy frames now carry a `lottery_zh_name` column (the API
+  display name, e.g. '双色球') right after `lottery_name`, whose value stays the game
+  code; the ingestion pipeline maps raw API columns by name instead of by position.
+  Legacy cache CSVs migrate automatically (display names are mapped to codes and the
+  missing column is backfilled).
+- Sports-lottery games (dlt / pls / plw / qxc) no longer re-download every page on a
+  cache hit: the CSL API has no date-window query, so the incremental refresh now walks
+  pages newest-first and stops at the first page overlapping the cached draws (usually
+  page 1; exhausting all pages degrades to a full refresh with dedup), with the same
+  rich progress bar as full fetches — its total shrinks to the pages actually fetched
+  and the info field reports real row counts. A warmup helper returns the page count
+  explicitly. Real-world effect: a dlt refresh drops from ~15s (full crawl) to instant
+  when the cache is up to date.
+- `lottery_name` is canonicalised to the game code (`ssq`/`dlt`/...) at ingestion: the
+  raw APIs carry display names ('双色球'/'超级大乐透') while the rest of the library and
+  the documentation key on codes, so the column previously disagreed with them.
+- The incremental cache refresh no longer crashes when the cache already covers every
+  draw up to today (or the API returned a future-dated row): the computed `begin_date`
+  fell beyond today and `check_params` rejected it. The cache layer now skips the
+  network fetch and returns the cached frame directly in that case.
+- `backtest` results now include a `lottery_name` column, and `backtest_summary` adds
+  four rate columns: `avg_red_hit_rate` / `avg_blue_hit_rate` (a strategy's average
+  hits ÷ balls drawn per game — the share of the drawn balls a ticket captures) and
+  `random_red_hit_rate` / `random_blue_hit_rate` (the `random` baseline's measured
+  share, shown on every row for comparison; NaN when the results contain no `random`
+  method). Theoretical shares are `R ÷ N` and `B ÷ N_blue` (e.g. ssq reds 6 ÷ 33 ≈ 18%),
+  so both the strategy and the baseline should sit close to them; `backtest_summary`
+  groups by `lottery_name + method` accordingly.
+- Progress bars rebuilt on rich (replacing tqdm, which is removed from the
+  dependencies): brand blue -> teal true-gradient bar (cell-by-cell interpolation
+  with a pip-style half-filled boundary cell), live date-window / row-count info,
+  CJK-correct adaptive width, stderr output, automatic silencing when stderr is not
+  a TTY, and a persistent completion row (pip-style).
+
+### Fixed
+
+- `if_cached=True` crashed with `RecursionError` on every real code path (empty-cache
+  fallback, incremental refresh, detail passthrough): the flag was passed back to
+  `load_history_data`, which re-dispatched into the cache layer forever. The flag is
+  now consumed by the cache layer; a regression test drives the real
+  `load_history_data -> cache -> network` dispatch (mocking the network layer, not
+  the cache layer, which is how earlier tests masked this).
+- The official CWL API returns draw dates with a weekday suffix (`2026-10-08(四)`), which
+  reached the public DataFrame and the cache CSV verbatim and crashed the incremental
+  refresh with `ValueError: Invalid isoformat string`. Dates are now normalised to the
+  ISO prefix at ingestion, and the cache's incremental parser tolerates legacy CSVs
+  already written with suffixes (no manual cache cleanup needed).
+- Incremental refresh through an empty draw window crashed with `KeyError: 'code'`: the
+  API legitimately returns no draws for some date windows (ssq draws three times a
+  week), and the empty response was parsed into a column-less DataFrame. Empty API
+  responses now keep the expected columns on both the CWL and CSL paths.
+- README stated a Python requirement of 3.9+ while the package requires ≥ 3.10.
+- The `deviation` strategy description used mismatched full/half-width parentheses in
+  the Chinese docs（实际-期望)² → （实际 − 期望）².
+- `filter` strategy docs now state that `zone_ratio` and `mod3_range` are exact
+  matches (the `mod3_range` name alone reads like a range).
+
 ## [1.0.0] - 2026-10-03
 
 ### Added

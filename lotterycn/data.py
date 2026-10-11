@@ -1,16 +1,27 @@
 # coding=utf-8
 # author=Ulion.Tse
 
-import random
 import sys
 import time
-from typing import Union
+import random
+from typing import Optional, Union
 
 import pandas
 import requests
-import tqdm
 
-from .utils import LotteryError, Tse
+from .utils import LotteryError, Tse, progress_bar
+
+# display names shown as lottery_zh_name (the raw APIs carry them in their name fields)
+GAME_ZH_NAMES = {
+    "ssq": "双色球",
+    "qlc": "七乐彩",
+    "kl8": "快乐8",
+    "3d": "福彩3D",
+    "dlt": "超级大乐透",
+    "pls": "排列3",
+    "plw": "排列5",
+    "qxc": "7星彩",
+}
 
 # pandas.options.display.max_columns = None
 # pandas.options.display.max_rows = None
@@ -82,14 +93,17 @@ class ChinaWelfareLottery(Tse):
         sleep_seconds = kwargs.get("sleep_seconds", random.random())
 
         data: list = []
-        for i in tqdm.tqdm(range(0, len(durings), 2), desc=f"Downloading <{lottery_name}>", ncols=80):
-            result = self._cwl(lottery_name=lottery_name, begin_date=durings[i], end_date=durings[i + 1], **kwargs)
-            if is_detail_result:
-                data.extend((result.get("result") or [])[::-1])  # 批内反转为升序后追加
-            else:
-                data.append(result)
-            if i + 2 < len(durings):
-                time.sleep(sleep_seconds)  # 最后一批请求后不再休眠
+        with progress_bar(f"Downloading {lottery_name}", unit="batches", total=len(range(0, len(durings), 2))) as bar:
+            for i in range(0, len(durings), 2):
+                result = self._cwl(lottery_name=lottery_name, begin_date=durings[i], end_date=durings[i + 1], **kwargs)
+                if is_detail_result:
+                    data.extend((result.get("result") or [])[::-1])  # append batches reversed to ascending order
+                else:
+                    data.append(result)
+                bar.advance()
+                bar.set_info(f"{durings[i]} -> {durings[i + 1]}")
+                if i + 2 < len(durings):
+                    time.sleep(sleep_seconds)  # no sleep after the final batch
         if is_detail_result:
             return data
         if not data:
@@ -126,7 +140,12 @@ class ChinaWelfareLottery(Tse):
 
         if is_detail_result:
             return data
-        return pandas.DataFrame([{key: item[key] for key in self.cwl_data_cols} for item in (data.get("result") or [])])
+        rows = data.get("result") or []
+        if rows:
+            return pandas.DataFrame([{key: item[key] for key in self.cwl_data_cols} for item in rows])
+        # a date window may legitimately contain no draws (e.g. incremental refresh on a
+        # non-draw day): keep the expected columns so downstream concat/sort still work
+        return pandas.DataFrame(columns=self.cwl_data_cols)
 
 
 class ChinaSportsLottery(Tse):
@@ -153,6 +172,26 @@ class ChinaSportsLottery(Tse):
         """
         return {"gameNo": game_no, "pageNo": page_no, "pageSize": self.csl_max_batch, "provinceId": 0, "isVerify": 1}
 
+    def csl_warmup(self, timeout: float, proxies: Optional[dict], max_retries: int) -> int:
+        """建立会话并探测体彩历史总页数（幂等；返回总页数，调用方据此翻页）。"""
+        if not self.session or not self.csl_pages:
+            self.session = requests.Session()
+            _ = self.session.get(self.csl_host_url, headers=self.csl_host_headers, timeout=timeout, proxies=proxies)
+            _ = self.session.get(self.csl_project_url, headers=self.csl_host_headers, timeout=timeout, proxies=proxies)
+            pages_json = self.fetch_json(
+                self.csl_api_url,
+                params=self.get_params(),
+                headers=self.csl_api_headers,
+                timeout=timeout,
+                proxies=proxies,
+                max_retries=max_retries,
+                source="csl",
+            )
+            self.csl_pages = (pages_json.get("value") or {}).get("pages")
+            if not isinstance(self.csl_pages, int) or self.csl_pages < 1:
+                raise LotteryError(f"csl api unexpected pages: {self.csl_pages!r}")
+        return self.csl_pages
+
     def csl(self, lottery_name: str = "dlt", **kwargs) -> Union[list, pandas.DataFrame]:
         """
         https://www.lottery.gov.cn
@@ -174,35 +213,25 @@ class ChinaSportsLottery(Tse):
         if lottery_name not in self.csl_projects:
             raise LotteryError(f"unsupported sports lottery name {lottery_name!r}, must be one of {self.csl_projects}")
 
-        if not self.session or not self.csl_pages:
-            self.session = requests.Session()
-            _ = self.session.get(self.csl_host_url, headers=self.csl_host_headers, timeout=timeout, proxies=proxies)
-            _ = self.session.get(self.csl_project_url, headers=self.csl_host_headers, timeout=timeout, proxies=proxies)
-            pages_json = self.fetch_json(
-                self.csl_api_url,
-                params=self.get_params(),
-                headers=self.csl_api_headers,
-                timeout=timeout,
-                proxies=proxies,
-                max_retries=max_retries,
-                source="csl",
-            )
-            self.csl_pages = (pages_json.get("value") or {}).get("pages")
-            if not isinstance(self.csl_pages, int) or self.csl_pages < 1:
-                raise LotteryError(f"csl api unexpected pages: {self.csl_pages!r}")
+        total_pages = self.csl_warmup(timeout=timeout, proxies=proxies, max_retries=max_retries)
 
         sleep_seconds = kwargs.get("sleep_seconds", random.random())
 
         data: list = []
+        rows_fetched = 0
 
-        for page_no in tqdm.tqdm(range(1, self.csl_pages + 1), desc=f"Downloading <{lottery_name}>", ncols=80):
-            result = self._csl(lottery_name=lottery_name, page_no=page_no, **kwargs)
-            if is_detail_result:
-                data.extend(result["value"]["list"])
-            else:
-                data.append(result)
-            if page_no < self.csl_pages:
-                time.sleep(sleep_seconds)  # 最后一批请求后不再休眠
+        with progress_bar(f"Downloading {lottery_name}", unit="pages", total=total_pages) as bar:
+            for page_no in range(1, total_pages + 1):
+                result = self._csl(lottery_name=lottery_name, page_no=page_no, **kwargs)
+                if is_detail_result:
+                    data.extend(result["value"]["list"])
+                else:
+                    data.append(result)
+                rows_fetched += len(result)
+                bar.advance()
+                bar.set_info(f"{rows_fetched} rows")
+                if page_no < total_pages:
+                    time.sleep(sleep_seconds)  # no sleep after the final page
         if is_detail_result:
             return data[::-1]
         if not data:
@@ -228,14 +257,24 @@ class ChinaSportsLottery(Tse):
 
         if is_detail_result:
             return data
-        return pandas.DataFrame([{key: item[key] for key in self.csl_data_cols} for item in data["value"]["list"]])
+        rows = data["value"]["list"]
+        if rows:
+            return pandas.DataFrame([{key: item[key] for key in self.csl_data_cols} for item in rows])
+        return pandas.DataFrame(columns=self.csl_data_cols)  # symmetric guard: empty page keeps columns
 
 
 class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
     def __init__(self):
         super().__init__()
         self.cl_projects = ("dlt", "pls", "plw", "qxc", "ssq", "qlc", "kl8", "3d")
-        self.cl_cols = ["lottery_name", "lottery_order", "lottery_date", "lottery_red", "lottery_blue"]
+        self.cl_cols = [
+            "lottery_name",
+            "lottery_zh_name",
+            "lottery_order",
+            "lottery_date",
+            "lottery_red",
+            "lottery_blue",
+        ]
         self.cl_has_blue_projects = ["ssq", "qlc", "dlt", "qxc"]
 
     def load_history_data(self, lottery_name: str, **kwargs) -> Union[list, pandas.DataFrame]:
@@ -292,10 +331,11 @@ class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
         is_detail_result = kwargs.get("is_detail_result", False)
         if amount < 1:
             raise LotteryError(f"amount ({amount}) must be >= 1")
-        data_list = [
-            self.get_random_lottery(lottery_name)
-            for _ in tqdm.tqdm(range(amount), desc=f"Generating <{lottery_name}>", ncols=80)
-        ]
+        data_list = []
+        with progress_bar(f"Generating {lottery_name}", unit="tickets", total=amount, disable=amount < 10) as bar:
+            for _ in range(amount):
+                data_list.append(self.get_random_lottery(lottery_name))
+                bar.advance()
         return data_list if is_detail_result else self.get_random_data_dataframe(data_list, lottery_name, amount)
 
     def get_random_base(
@@ -350,14 +390,15 @@ class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
         :param amount: int, 注数。
         :return: pandas.DataFrame, 列与 cl_cols 一致（lottery_order 为 0..amount-1）。
         """
-        has_cols = self.cl_cols[3:] if lottery_name in self.cl_has_blue_projects else self.cl_cols[3:-1]
-        new_cols = (
-            self.cl_cols[:3] if lottery_name in self.cl_has_blue_projects else self.cl_cols[:3] + self.cl_cols[4:]
-        )
-        data = pandas.DataFrame(data_list, columns=has_cols)
-        for col in new_cols:
-            data[col] = lottery_name if col[-4:] == "name" else ""
-        data[self.cl_cols[1]] = range(amount)
+        if lottery_name in self.cl_has_blue_projects:
+            data = pandas.DataFrame(data_list, columns=["lottery_red", "lottery_blue"])
+        else:
+            data = pandas.DataFrame(data_list, columns=["lottery_red"])
+            data["lottery_blue"] = ""  # no-blue games keep an empty blue column for schema parity
+        data.insert(0, "lottery_date", "")
+        data.insert(0, "lottery_order", range(amount))
+        data.insert(0, "lottery_zh_name", GAME_ZH_NAMES.get(lottery_name, ""))
+        data.insert(0, "lottery_name", lottery_name)
         return data[self.cl_cols]
 
     def get_history_data_dataframe(self, data_frame: pandas.DataFrame, lottery_name: str) -> pandas.DataFrame:
@@ -368,17 +409,48 @@ class ChinaLottery(ChinaWelfareLottery, ChinaSportsLottery):
         :return: pandas.DataFrame, 列与 cl_cols 一致。
         """
         if lottery_name in self.csl_projects:
-            data = pandas.DataFrame(data_frame.to_numpy(), columns=self.cl_cols[:-1])
+            data = pandas.DataFrame(data_frame.to_numpy(), columns=self.csl_data_cols)
+            data = data.rename(
+                columns={
+                    "lotteryGameName": "lottery_name",
+                    "lotteryDrawNum": "lottery_order",
+                    "lotteryDrawTime": "lottery_date",
+                    "lotteryDrawResult": "lottery_red",
+                }
+            )
             if lottery_name == "dlt":
-                data["lottery_blue"] = data["lottery_red"].apply(lambda x: ",".join(x.split(" ")[-2:]))
-                data["lottery_red"] = data["lottery_red"].apply(lambda x: ",".join(x.split(" ")[:-2]))
+                data["lottery_blue"] = data["lottery_red"].str.split(" ").str[-2:].str.join(",")
+                data["lottery_red"] = data["lottery_red"].str.split(" ").str[:-2].str.join(",")
             elif lottery_name == "qxc":
-                data["lottery_blue"] = data["lottery_red"].apply(lambda x: ",".join(x.split(" ")[-1:]))
-                data["lottery_red"] = data["lottery_red"].apply(lambda x: ",".join(x.split(" ")[:-1]))
+                data["lottery_blue"] = data["lottery_red"].str.split(" ").str[-1:].str.join(",")
+                data["lottery_red"] = data["lottery_red"].str.split(" ").str[:-1].str.join(",")
             else:
-                data["lottery_red"] = data["lottery_red"].apply(lambda x: ",".join(x.split(" ")))
-            return data
-        return pandas.DataFrame(data_frame.to_numpy(), columns=self.cl_cols)
+                data["lottery_red"] = data["lottery_red"].str.split(" ").str.join(",")
+        else:
+            data = pandas.DataFrame(data_frame.to_numpy(), columns=self.cwl_data_cols)
+            data = data.rename(
+                columns={
+                    "name": "lottery_name",
+                    "code": "lottery_order",
+                    "date": "lottery_date",
+                    "red": "lottery_red",
+                    "blue": "lottery_blue",
+                }
+            )
+        # keep the API display name ('双色球'/'超级大乐透') as lottery_zh_name, then
+        # canonicalise lottery_name to the game code — the rest of the library keys on codes
+        zh_names = data["lottery_name"]
+        data["lottery_name"] = lottery_name
+        data.insert(1, "lottery_zh_name", zh_names)
+        # the official CWL API carries a weekday suffix in draw dates ("2026-10-08(四)");
+        # keep the ISO prefix only so downstream consumers (cache, user code) see clean dates
+        data["lottery_date"] = (
+            data["lottery_date"]
+            .astype("string")
+            .str.extract(r"(\d{4}-\d{2}-\d{2})", expand=False)
+            .fillna(data["lottery_date"])
+        )
+        return data
 
 
 # ----- assembly：默认客户端与模块级 API（上游惯例：装配区置于文件末尾）-----

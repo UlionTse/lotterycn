@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Games/Entertainment",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Information Analysis",
@@ -29,8 +30,9 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-    "tqdm>=4.70.1",
+    "rich>=15.0.0",
     "pandas>=2.3.3",
+    "numpy>=1.26.4",
     "requests>=2.34.2",
 ]
 dynamic = ["version"]
@@ -51,6 +53,9 @@ Documentation = "https://uliontse.github.io/lotterycn/"
 
 [tool.setuptools]
 packages = ["lotterycn"]
+
+[tool.setuptools.package-data]
+lotterycn = ["py.typed"]
 
 [tool.setuptools.dynamic]
 version = { attr = "lotterycn.__version__" }

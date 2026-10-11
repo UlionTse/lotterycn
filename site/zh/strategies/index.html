@@ -283,6 +283,17 @@
 </li>
 
         <li class="md-nav__item">
+  <a href="#filter" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Filter 形态指标口径
+
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
 
@@ -477,6 +488,17 @@
 </li>
 
         <li class="md-nav__item">
+  <a href="#filter" class="md-nav__link">
+    <span class="md-ellipsis">
+
+        Filter 形态指标口径
+
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
 
@@ -543,7 +565,7 @@
 <td><code>deviation</code></td>
 <td><code>chisq</code></td>
 <td>统计</td>
-<td>卡方偏离度（实际-期望)²/期望；<code>side='hot'</code> 或 <code>'cold'</code></td>
+<td>卡方偏离度（实际 − 期望）² / 期望；<code>side='hot'</code> 或 <code>'cold'</code></td>
 </tr>
 <tr>
 <td><code>repeat</code></td>
@@ -579,7 +601,7 @@
 <td><code>filter</code></td>
 <td>—</td>
 <td>形态</td>
-<td>可组合缩水：和值 / 奇偶 / 质合 / 三区比 / 012 路 / AC 值 / 连号 / 杀号</td>
+<td>可组合缩水：和值 / 奇偶 / 质合 / AC 值 / 连号区间，三区比与 012 路精确匹配，杀号</td>
 </tr>
 <tr>
 <td><code>ensemble</code></td>
@@ -592,22 +614,90 @@
 <h2 id="_2">用法<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lotterycn</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_predict_numbers</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">picks</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>          <span class="c1"># frequency + mode=&#39;hot&#39;</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">chase</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;omission&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>     <span class="c1"># 遗漏回补</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">dev</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;deviation&#39;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;cold&#39;</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">shrink</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                              <span class="n">sum_range</span><span class="o">=</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">),</span> <span class="n">prime_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                              <span class="n">zone_ratio</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">exclude_numbers</span><span class="o">=</span><span class="p">{</span><span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">})</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">votes</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ensemble&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                             <span class="n">members</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">,</span> <span class="s1">&#39;omission&#39;</span><span class="p">,</span> <span class="s1">&#39;repeat&#39;</span><span class="p">))</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># method='hot' 是 frequency + mode='hot' 的别名</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">picks</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"hot"</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">chase</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"omission"</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 遗漏回补</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">dev</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span><span class="s2">"ssq"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"deviation"</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">"cold"</span><span class="p">,</span> <span class="n">explore_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">shrink</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="s2">"ssq"</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">method</span><span class="o">=</span><span class="s2">"filter"</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">amount</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">sum_range</span><span class="o">=</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">),</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">prime_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">zone_ratio</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">exclude_numbers</span><span class="o">=</span><span class="p">{</span><span class="mi">7</span><span class="p">,</span> <span class="mi">13</span><span class="p">},</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="p">)</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="n">votes</span> <span class="o">=</span> <span class="n">load_predict_numbers</span><span class="p">(</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="s2">"ssq"</span><span class="p">,</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">method</span><span class="o">=</span><span class="s2">"ensemble"</span><span class="p">,</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">amount</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="n">members</span><span class="o">=</span><span class="p">(</span><span class="s2">"frequency"</span><span class="p">,</span> <span class="s2">"omission"</span><span class="p">,</span> <span class="s2">"repeat"</span><span class="p">),</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="p">)</span>
 </span></code></pre></div>
 <p>传 <code>history=</code> 注入 DataFrame 可完全离线；否则工厂拉取历史（支持 <code>if_cached=True</code>）。</p>
+<h2 id="filter">Filter 形态指标口径<a class="headerlink" href="#filter" title="Permanent link">&para;</a></h2>
+<p>所有 <code>*_range</code> 过滤为闭区间 <code>(lo, hi)</code>；<code>zone_ratio</code> 与 <code>mod3_range</code> 为计数三元组的<strong>精确匹配</strong>。</p>
+<ul>
+<li><strong>AC 值</strong> —— 排序去重后两两差值的不同个数 −（号码个数 − 1）。例：<code>{01,02,06,13,27,33}</code> 两两差值恰有 15 个不同值，AC = 15 −（6 − 1）= 10（6 个号的理论最大值）；全连号 <code>{01..06}</code> 只有 5 个，AC = 0。</li>
+<li><strong>三区比（精确匹配）</strong> —— 红球池三等分，各区计数必须与给定 <code>(一区, 二区, 三区)</code> 完全一致。各彩种分界：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>彩种（红球池）</th>
+<th>一区</th>
+<th>二区</th>
+<th>三区</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ssq</code>（1-33）</td>
+<td>1-11</td>
+<td>12-22</td>
+<td>23-33</td>
+</tr>
+<tr>
+<td><code>qlc</code>（1-30）</td>
+<td>1-10</td>
+<td>11-20</td>
+<td>21-30</td>
+</tr>
+<tr>
+<td><code>kl8</code>（1-80）</td>
+<td>1-27</td>
+<td>28-54</td>
+<td>55-80</td>
+</tr>
+<tr>
+<td><code>dlt</code>（1-35）</td>
+<td>1-12</td>
+<td>13-24</td>
+<td>25-35</td>
+</tr>
+<tr>
+<td>数字型 <code>3d</code>/<code>pls</code>/<code>plw</code>/<code>qxc</code>（0-9）</td>
+<td>0-3</td>
+<td>4-6</td>
+<td>7-9</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>012 路 <code>mod3_range</code>（精确匹配）</strong> —— 号码除以 3 余 0 / 1 / 2 的计数三元组必须与给定值完全一致。</li>
+<li><strong>质数</strong> —— {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31}（1 不算质数）。</li>
+<li><strong>连号对数</strong> —— 排序去重后相邻两数恰差 1 的对数。</li>
+</ul>
+<p>与其他策略一致：过滤只改变选号的分布形态，不改变任何一注的中奖概率。</p>
 <h2 id="_3">回测——亲自验证"无预测力"<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lotterycn</span><span class="w"> </span><span class="kn">import</span> <span class="n">backtest</span><span class="p">,</span> <span class="n">backtest_summary</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">results</span> <span class="o">=</span> <span class="n">backtest</span><span class="p">(</span><span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="s1">&#39;omission&#39;</span><span class="p">,</span> <span class="s1">&#39;ensemble&#39;</span><span class="p">),</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                   <span class="n">lottery_name</span><span class="o">=</span><span class="s1">&#39;ssq&#39;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">backtest_summary</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">results</span> <span class="o">=</span> <span class="n">backtest</span><span class="p">(</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">methods</span><span class="o">=</span><span class="p">(</span><span class="s2">"random"</span><span class="p">,</span> <span class="s2">"hot"</span><span class="p">,</span> <span class="s2">"omission"</span><span class="p">,</span> <span class="s2">"ensemble"</span><span class="p">),</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">lottery_name</span><span class="o">=</span><span class="s2">"ssq"</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">window</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">backtest_summary</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
 </span></code></pre></div>
 <p>每个策略由前 <code>window</code> 期历史驱动出票，与下一期真实开奖比对红/蓝命中数。每次复现的结论都一样：<strong>所有策略与 <code>random</code> 表现相当</strong>。社区机器学习尝试（LSTM/XGBoost 预测号码序列）结论一致：排列三量级（1/1000）空间上 LSTM 准确率 ≈ 4.2‰，即基线水平。任何"显著优于随机"的观察都应视为过拟合或噪声。</p>
 <h2 id="_4">关于股票分析类比<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>

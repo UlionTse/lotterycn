@@ -4,20 +4,36 @@
 import pandas
 import pytest
 
-from lotterycn.predict import load_predict_numbers
+from lotterycn.analysis import NUMBER_POOLS
+from lotterycn.data import GAME_ZH_NAMES
+from lotterycn.predict import (
+    MarkovPredictor,
+    _ac_value,
+    _consecutive_pairs,
+    _mod3_counts,
+    _zone_counts,
+    load_predict_numbers,
+)
 from lotterycn.utils import LotteryError
 
-CL_COLS = ["lottery_name", "lottery_order", "lottery_date", "lottery_red", "lottery_blue"]
+CL_COLS = [
+    "lottery_name",
+    "lottery_zh_name",
+    "lottery_order",
+    "lottery_date",
+    "lottery_red",
+    "lottery_blue",
+]
 
 # 手工构造、频率可手算的双色球历史：
 # 红球 01 出现 4 次；02/03/04 各 2 次；05~18 各 1 次；19~33 为 0
 # 蓝球 07 出现 2 次；08/09 各 1 次；其余为 0
 SSQ_HISTORY = pandas.DataFrame(
     [
-        ["ssq", "2026001", "2026-01-01", "01,02,03,04,05,06", "07"],
-        ["ssq", "2026002", "2026-01-03", "01,02,03,07,08,09", "07"],
-        ["ssq", "2026003", "2026-01-05", "01,04,10,11,12,13", "08"],
-        ["ssq", "2026004", "2026-01-07", "01,14,15,16,17,18", "09"],
+        ["ssq", "双色球", "2026001", "2026-01-01", "01,02,03,04,05,06", "07"],
+        ["ssq", "双色球", "2026002", "2026-01-03", "01,02,03,07,08,09", "07"],
+        ["ssq", "双色球", "2026003", "2026-01-05", "01,04,10,11,12,13", "08"],
+        ["ssq", "双色球", "2026004", "2026-01-07", "01,14,15,16,17,18", "09"],
     ],
     columns=CL_COLS,
 )
@@ -38,7 +54,7 @@ def _game_history(name, dates=("2026-01-01", "2026-01-03")):
     rows = []
     for i, date in enumerate(dates):
         red, blue = GAME_ROWS[name]
-        rows.append([name, f"2026{i + 1:03d}", date, red, blue])
+        rows.append([name, GAME_ZH_NAMES.get(name, ""), f"2026{i + 1:03d}", date, red, blue])
     return pandas.DataFrame(rows, columns=CL_COLS)
 
 
@@ -91,6 +107,24 @@ def test_markov_predictor():
         assert len(set(nums)) == 6 and all(1 <= n <= 33 for n in nums)
 
 
+def test_markov_transition_counts_match_reference():
+    # 手算可验证：号码 01 出现序列为 [出, 未出, 出, 未出]
+    # 相邻对 (出,未出)×2、(未出,出)×1 → Laplace 平滑后 [[1, 2], [3, 1]]
+    frame = pandas.DataFrame(
+        [
+            ["ssq", "双色球", "2026001", "2026-01-01", "01,02,03,04,05,06", "07"],
+            ["ssq", "双色球", "2026002", "2026-01-02", "08,09,10,11,12,13", "07"],
+            ["ssq", "双色球", "2026003", "2026-01-03", "01,14,15,16,17,18", "08"],
+            ["ssq", "双色球", "2026004", "2026-01-04", "19,20,21,22,23,24", "09"],
+        ],
+        columns=CL_COLS,
+    )
+    predictor = MarkovPredictor(lottery_name="ssq", history=frame)
+    assert predictor.transition["red"][1] == [[1, 2], [3, 1]]
+    # 从未出现的号码 33：4 期均为未出现 → (未出,未出)×3，Laplace 平滑后 [[4, 1], [1, 1]]
+    assert predictor.transition["red"][33] == [[4, 1], [1, 1]]
+
+
 def test_filter_predictor():
     frame = load_predict_numbers(
         "ssq", method="filter", amount=3, history=SSQ_HISTORY, sum_range=(90, 120), odd_range=(2, 4)
@@ -120,9 +154,16 @@ OMISSION_HISTORY = (
     pandas.DataFrame(
         [
             [
-                ["ssq", f"202600{i + 1}", "2026-01-0{1}".replace("{1}", str(i + 1)), "01,02,03,04,05,06", "07"]
+                [
+                    "ssq",
+                    "双色球",
+                    f"202600{i + 1}",
+                    "2026-01-0{1}".replace("{1}", str(i + 1)),
+                    "01,02,03,04,05,06",
+                    "07",
+                ]
                 if i < 3
-                else ["ssq", f"202600{i + 1}", f"2026-01-{i + 1:02d}", "07,08,09,10,11,12", "07"]
+                else ["ssq", "双色球", f"202600{i + 1}", f"2026-01-{i + 1:02d}", "07,08,09,10,11,12", "07"]
                 for i in range(8)
             ][j]
         ]
@@ -131,14 +172,14 @@ OMISSION_HISTORY = (
     if False
     else pandas.DataFrame(
         [
-            ["ssq", "2026001", "2026-01-01", "01,02,03,04,05,06", "07"],
-            ["ssq", "2026002", "2026-01-02", "01,02,03,04,05,06", "07"],
-            ["ssq", "2026003", "2026-01-03", "01,02,03,04,05,06", "07"],
-            ["ssq", "2026004", "2026-01-04", "07,08,09,10,11,12", "07"],
-            ["ssq", "2026005", "2026-01-05", "07,08,09,10,11,12", "07"],
-            ["ssq", "2026006", "2026-01-06", "07,08,09,10,11,12", "07"],
-            ["ssq", "2026007", "2026-01-07", "07,08,09,10,11,12", "07"],
-            ["ssq", "2026008", "2026-01-08", "07,08,09,10,11,12", "07"],
+            ["ssq", "双色球", "2026001", "2026-01-01", "01,02,03,04,05,06", "07"],
+            ["ssq", "双色球", "2026002", "2026-01-02", "01,02,03,04,05,06", "07"],
+            ["ssq", "双色球", "2026003", "2026-01-03", "01,02,03,04,05,06", "07"],
+            ["ssq", "双色球", "2026004", "2026-01-04", "07,08,09,10,11,12", "07"],
+            ["ssq", "双色球", "2026005", "2026-01-05", "07,08,09,10,11,12", "07"],
+            ["ssq", "双色球", "2026006", "2026-01-06", "07,08,09,10,11,12", "07"],
+            ["ssq", "双色球", "2026007", "2026-01-07", "07,08,09,10,11,12", "07"],
+            ["ssq", "双色球", "2026008", "2026-01-08", "07,08,09,10,11,12", "07"],
         ],
         columns=CL_COLS,
     )
@@ -246,6 +287,42 @@ def test_filter_shape_constraints():
 def test_unknown_strategy_raises():
     with pytest.raises(LotteryError):
         load_predict_numbers("ssq", method="astro", history=SSQ_HISTORY)
+
+
+def test_ac_value_definition():
+    # AC 值 = 两两差值的不同个数 - (号码个数 - 1)
+    assert _ac_value([1, 2, 6, 13, 27, 33]) == 10  # 15 个互异差值，6 个号的理论最大值
+    assert _ac_value([1, 2, 3, 4, 5, 6]) == 0  # 全连号：差值仅 {1..5} 共 5 个
+    assert _ac_value([3, 3, 3]) == 0  # 去重后不足 2 个号码
+    assert _ac_value([1, 33]) == 0  # 仅 1 个差值：1 - (2 - 1) = 0
+
+
+def test_consecutive_pairs_definition():
+    assert _consecutive_pairs([1, 2, 6, 13, 27, 33]) == 1
+    assert _consecutive_pairs([1, 2, 3, 4, 5, 6]) == 5
+    assert _consecutive_pairs([1, 3, 5, 7]) == 0
+    assert _consecutive_pairs([3, 2, 2, 1]) == 2  # 先去重排序：1,2,3 → 两对
+
+
+def test_mod3_counts_definition():
+    # 012 路：号码 % 3 的计数（6,27,33 余 0；1,13 余 1；2 余 2）
+    assert _mod3_counts([1, 2, 6, 13, 27, 33]) == (3, 2, 1)
+    assert _mod3_counts([3, 6, 9]) == (3, 0, 0)
+
+
+def test_zone_counts_boundaries():
+    # 三区比分界与 docs/strategies「Filter 形态指标口径」表一致，锁定边界号的归属
+    assert _zone_counts([1, 5, 12, 18, 27, 33], NUMBER_POOLS["ssq"]) == (2, 2, 2)
+    # ssq 11/12 与 22/23 是一、二区与二、三区的分界
+    assert _zone_counts([11, 12, 22, 23, 24, 25], NUMBER_POOLS["ssq"]) == (1, 2, 3)
+    # kl8 为 27/27/26 分界：27 属一区，28/54 属二区，55 起属三区
+    assert _zone_counts([27, 28, 54, 55, 56, 57], NUMBER_POOLS["kl8"]) == (1, 2, 3)
+    # dlt 前区为 12/12/11 分界：12 属一区，13/24 属二区，25 起属三区
+    assert _zone_counts([12, 13, 24, 25, 26, 27], NUMBER_POOLS["dlt"]) == (1, 2, 3)
+    # qlc 均匀三等分：10 属一区，11/20 属二区，21 起属三区
+    assert _zone_counts([10, 11, 20, 21, 22, 23], NUMBER_POOLS["qlc"]) == (1, 2, 3)
+    # 数字型 0-9 分界为 0-3 / 4-6 / 7-9
+    assert _zone_counts([0, 3, 4, 6, 7, 9], NUMBER_POOLS["3d"]) == (2, 2, 2)
 
 
 def test_invalid_inputs_raise():

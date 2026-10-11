@@ -7,6 +7,81 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## [1.0.1] - 2026-10-10
+
+### 新增
+
+- 支持 Python 3.15：classifiers 覆盖 3.10–3.15，CI 矩阵测试全部六个版本（3.13/3.14 此前
+  已声明但从未实测）。
+- Release 驱动发布：tag 推送时 `prepare-release.yml` 经新增的 `tools/extract_changelog.py`
+  从 `CHANGELOG.md` / `CHANGELOG_zh.md` 抽取该版本段落，自动创建双语草稿 GitHub Release；
+  点击 Publish 后 `release.yml` 才构建并上传 PyPI——两个 workflow 均校验 tag 与 `__version__` 一致。
+- 文档化 Filter 形态指标口径（AC 值、各彩种三区分界、012 路、质数、连号对数），并以单元测试
+  锁定精确语义（`tests/test_predict.py`）。
+- `predict.py` 中数学较重的部分补充行内注释（和值带 MA ± k·σ、卡方期望频次、AC 值、遗漏分、
+  Efraimidis–Spirakis 加权采样）。
+
+### 变更
+
+- 双语 README 重构：新增提纲目录；文档站链接提升至页首（居中链接 + Docs 徽章）；
+  Python 要求表述为 3.10 – 3.15。
+- 两份 README 与文档站首页的代码块统一改为 black 风格竖排调用（≤ 79 列），窄屏不再出现
+  断行错位。
+- `RELEASE.md` 按 Release 驱动流程重写并附逐步发布教程；发布说明由手工粘贴改为自动生成。
+- README 精简重构：目录由 16 项减至 7 项；彩种 / 策略 / 数据来源合并为一节；快速上手改为
+  单个走缓存的完整流程（文档站首页同步，并补上中奖校验一步）；API 一览、本地缓存、开奖详情、
+  浮动奖配置与统计小节移除——均由文档站完整承载。
+- README 开场去重：删除导语段（标语与"项目特点"四条各讲一遍即可）；四条特点与文档站首页卡片
+  均按流水线重排（数据 → 数学 → 策略（核心）→ 流水线）；首页中插的规则核实段落折入
+  "只采官方数据"卡片并保留 Games & Rules 链接，快速上手补齐与 README 相同的引导句。
+- 性能优化：`load_number_statistics` 与策略构造器（frequency / tail / omission / markov /
+  markov2）改为一次性解析出现矩阵 + numpy 向量化计算——全历史统计提速约 250–380 倍
+  （ssq 3000 期：1.2s → 0.015s；kl8 8000 期：5.8s → 0.04s），结果经纯 Python 参考实现
+  对拍测试验证完全一致；backtest 预解析真实开奖并按策略复用解析结果；`numpy` 成为显式
+  依赖（兼容 pandas >= 2.3.3 与 3.x）。
+- 按 PEP 561 发布 `py.typed` 标记（随 wheel package-data 分发），下游 `mypy` 用户可直接
+  获得内联类型；新增 PR 模板；pre-commit 升级至 ruff v0.17.0（ruff + ruff-format）并挂载
+  按项目依赖集钉版的 mypy hook。
+- 历史开奖 / 随机选号 / 策略选号返回的 DataFrame 新增 `lottery_zh_name` 列（接口展示名，
+  如 '双色球'），紧跟 `lottery_name`（其值保持为游戏代码）；入口管道改为按列名映射原始
+  接口字段，不再依赖位置对齐。旧缓存 CSV 自动迁移（展示名映射为代码、缺失列自动补齐）。
+- 体彩系彩种（dlt / pls / plw / qxc）缓存命中不再全量重抓：体彩接口无日期窗口查询，
+  增量刷新改为从最新页翻页、与缓存期号出现交集即停（通常仅第 1 页；翻完全部页数则
+  等价全量刷新并由去重兜底），且与全量抓取共用同款 rich 进度条——重叠即停时总数收缩
+  为实抓页数，info 字段报告真实行数；探测页数的 warmup 现显式返回总页数。实测效果：
+  缓存已是最新时，dlt 刷新从全量爬取约 15s 降为即时。
+- `lottery_name` 在入口层归一为游戏代码（`ssq`/`dlt`/...）：原始接口携带的是展示名
+  （'双色球'/'超级大乐透'），而库内其余部分与文档均以代码为准，此前两者不一致。
+- 缓存已覆盖到今天（或接口返回了未来日期行）时，增量刷新不再崩溃：此前推导出的
+  `begin_date` 落在今天之后而被 `check_params` 拒绝。现缓存层在该情况下跳过网络抓取、
+  直接返回缓存内容。
+- `backtest` 明细新增 `lottery_name` 列；`backtest_summary` 新增四个比率列：
+  `avg_red_hit_rate` / `avg_blue_hit_rate`（策略平均命中 ÷ 每期开出球数——单注捕获了
+  当期开出球的几分之几）与 `random_red_hit_rate` / `random_blue_hit_rate`（`random`
+  基线的实测捕获率，逐行重复显示作对照；结果集不含 random 时为 NaN）。理论捕获率为
+  `R ÷ N`、`B ÷ N_blue`（如双色球红球 6 ÷ 33 ≈ 18%），策略与基线都应贴近该值；
+  `backtest_summary` 相应按 `lottery_name + method` 分组。
+- 进度条重建于 rich（取代 tqdm 并将其从依赖中移除）：品牌蓝→青真渐变进度条（逐格插值，
+  边界用 pip 式半格过渡）、实时日期区间/行数信息、东亚字符宽度正确、stderr 输出、stderr
+  非 TTY 时自动静默、完成后进度行保留（pip 式）。
+
+### 修复
+
+- `if_cached=True` 在所有真实路径上都会触发 `RecursionError`（缓存为空的首次拉取、增量
+  刷新、明细透传）：该开关被原样回传给 `load_history_data`，导致 data 层与 cache 层互相
+  分发直至爆栈。现由缓存层单点消费该开关；并新增回归测试驱动真实的
+  `load_history_data → cache → 网络` 分发链路（mock 网络层而非缓存层——旧测法正是因此
+  掩盖了此 bug）。
+- 官方福彩接口返回的开奖日期带星期后缀（`2026-10-08(四)`），原样进入公共 DataFrame 与
+  缓存 CSV，并使增量刷新抛出 `ValueError: Invalid isoformat string`。现于入口层将日期
+  规整为 ISO 前缀，且缓存增量解析兼容已写入后缀的旧 CSV（无需手动清理缓存）。
+- 增量刷新穿过"无开奖窗口"时抛出 `KeyError: 'code'`：某些日期窗口合法地没有开奖
+  （双色球每周三期），空响应被解析成无列名的空表。现空响应在福彩与体彩两条路径上都
+  保留预期列名。
+- README 的 Python 要求写为 3.9+，与包实际要求 ≥ 3.10 不符。
+- 中文文档中 `deviation` 策略描述括号全半角混用（（实际-期望)² → （实际 − 期望）²）。
+- `filter` 策略文档注明 `zone_ratio` 与 `mod3_range` 为精确匹配（`mod3_range` 名称易误读为区间）。
+
 ## [1.0.0] - 2026-10-03
 
 ### 新增

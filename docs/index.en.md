@@ -16,27 +16,25 @@ hide:
 
 </div>
 
-Every prize rule, odds table and fixed prize amount in this library is verified against the **official game rules** published on `cwl.gov.cn` (China Welfare Lottery) and `lottery.gov.cn` (China Sports Lottery). See [Games & Rules](games.md) for the complete official source table.
-
 <div class="grid cards" markdown>
-
-- :material-chart-line:{ .lg .middle } **Strategies & backtesting (core)**
-
-    ---
-
-    11 number-picking strategies + a composable shrink engine, with a built-in rolling backtest — every strategy matches random in expected value.
 
 - :material-database:{ .lg .middle } **Official data only**
 
     ---
 
-    Winning numbers and full draw details (sales, prize pools, per-level results, province distribution) — straight from official channels, no third-party scrapers.
+    Winning numbers and full draw details (sales, prize pools, per-level results, province distribution) — straight from official channels, no third-party scrapers. Every prize rule is verified against the official game rules: see [Games & Rules](games.md).
 
 - :material-calculator:{ .lg .middle } **Combinatorial odds & expectations**
 
     ---
 
     Exact counts for every prize tier; probabilities, expected values and return rates from official prize tables; instant ticket checking.
+
+- :material-chart-line:{ .lg .middle } **Strategies & backtesting (core)**
+
+    ---
+
+    11 number-picking strategies + a composable shrink engine, with a built-in rolling backtest — every strategy matches random in expected value.
 
 - :material-check-decagram:{ .lg .middle } **Full pipeline**
 
@@ -48,17 +46,20 @@ Every prize rule, odds table and fixed prize amount in this library is verified 
 
 ## Quickstart
 
-```python
-from lotterycn import (backtest, backtest_summary, load_history_data,
-                       load_number_statistics, load_predict_numbers,
-                       load_check_result, load_prize_expectation)
+One full pipeline — collect (cached & refreshed incrementally) → analyze → predict → backtest → check:
 
-df = load_history_data('ssq', if_cached=True)          # collect (cached, incremental)
-stats = load_number_statistics('ssq', history=df)      # analyze
-picks = load_predict_numbers('ssq', method='hot', amount=5)  # strategy sandbox
-print(load_prize_expectation('ssq'))                   # odds & expected value
-print(backtest_summary(backtest(methods=('random', 'hot'),
-                                lottery_name='ssq', window=100)))
+```python
+import lotterycn
+
+df_ssq = lotterycn.load_history_data(lottery_name='ssq', if_cached=True, sleep_seconds=0.1)
+stats = lotterycn.load_number_statistics(lottery_name='ssq', history=df_ssq)
+print(lotterycn.load_prize_expectation(lottery_name='ssq'))
+
+picks = lotterycn.load_predict_numbers(lottery_name='ssq', method='hot', amount=5)
+results = lotterycn.backtest(lottery_name='ssq', methods=('random', 'hot'), window=10)
+print(lotterycn.backtest_summary(results=results))
+
+print(lotterycn.load_check_result(lottery_name='ssq', my_number='01,05,12,18,27,33|08', if_cached=True))
 ```
 
 See the [API Reference](api/odds.md) for details.

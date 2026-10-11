@@ -29,13 +29,21 @@ import random
 import statistics
 from typing import Optional
 
+import numpy
 import pandas
 
-from .analysis import NUMBER_POOLS, _split
-from .data import load_history_data, load_random_data
+from .analysis import NUMBER_POOLS, _miss_statistics, _occurrence_matrix, _split
+from .data import GAME_ZH_NAMES, load_history_data, load_random_data
 from .utils import LotteryError
 
-CL_COLS = ["lottery_name", "lottery_order", "lottery_date", "lottery_red", "lottery_blue"]
+CL_COLS = [
+    "lottery_name",
+    "lottery_zh_name",
+    "lottery_order",
+    "lottery_date",
+    "lottery_red",
+    "lottery_blue",
+]
 
 RED_COUNTS = {"ssq": 6, "qlc": 7, "kl8": 20, "3d": 3, "pls": 3, "plw": 5, "qxc": 6, "dlt": 5}
 BLUE_COUNTS = {"ssq": 1, "qlc": 1, "dlt": 2, "qxc": 1}
@@ -57,12 +65,8 @@ def _format_numbers(numbers: list, if_pad: bool) -> str:
 
 def _frequency_scores(frame: pandas.DataFrame, side: str, pool: dict) -> dict:
     lo, hi = pool[side]
-    scores = {n: 0 for n in range(lo, hi + 1)}
-    for text in frame[f"lottery_{side}"]:
-        for n in _split(text):
-            if n in scores:
-                scores[n] += 1
-    return scores
+    counts = _occurrence_matrix(frame, f"lottery_{side}", lo, hi).sum(axis=0)
+    return {n: int(counts[i]) for i, n in enumerate(range(lo, hi + 1))}
 
 
 def _pick_by_score(scores: dict, k: int, mode: str = "hot", explore_ratio: float = 0.5) -> list:
@@ -71,6 +75,8 @@ def _pick_by_score(scores: dict, k: int, mode: str = "hot", explore_ratio: float
         return []
     ranked = sorted(scores, key=lambda n: scores[n], reverse=(mode == "hot"))
     k = min(k, len(ranked))
+    # 候选池 = 头部 k 个再外扩 ceil(explore_ratio × (候选总数 − k)) 个：
+    # explore_ratio=0 → 恰好头部 k 个（确定性）；=1 → 全池均匀随机。
     m = k + math.ceil(max(0.0, min(1.0, explore_ratio)) * (len(ranked) - k))
     return sorted(random.sample(ranked[:m], k))
 
@@ -80,6 +86,8 @@ def _weighted_sample_no_replacement(weights: dict, k: int) -> list:
     if not weights or k <= 0:
         return []
     k = min(k, len(weights))
+    # Efraimidis–Spirakis：key = U^(1/w)（U ~ Uniform(0,1)），按 key 降序取前 k 个
+    # 等价于按权重 w 的不放回加权抽样；权重全相等时退化为等概率抽样。
     keyed = sorted(weights, key=lambda n: random.random() ** (1.0 / max(weights[n], 1e-9)), reverse=True)
     return sorted(keyed[:k])
 
@@ -89,6 +97,8 @@ def _ac_value(reds: list) -> int:
     uniq = sorted(set(reds))
     if len(uniq) < 2:
         return 0
+    # 例：{01,02,06,13,27,33} 两两差值恰有 15 个不同值 → AC = 15 - (6 - 1) = 10（6 个号的理论最大值）；
+    # 全连号 {01..06} 差值只有 {1..5} 共 5 个 → AC = 0。
     diffs = {b - a for i, a in enumerate(uniq) for b in uniq[i + 1 :]}
     return len(diffs) - (len(uniq) - 1)
 
@@ -101,6 +111,8 @@ def _consecutive_pairs(reds: list) -> int:
 def _zone_counts(reds: list, pool: dict) -> tuple:
     lo, hi = pool["red"]
     width = (hi - lo + 1) / 3
+    # 号码池三等分：n 落入第 int((n - lo) / width) 区（width = 池大小 / 3），
+    # min(2, ·) 兜底除法边界；各彩种确切分界见 docs/strategies「Filter 形态指标口径」。
     counts = [0, 0, 0]
     for n in reds:
         counts[min(2, int((n - lo) / width))] += 1
@@ -160,6 +172,7 @@ class BasePredictor:
         frame.insert(0, "lottery_date", "")
         frame.insert(0, "lottery_order", range(len(frame)))
         frame.insert(0, "lottery_name", self.lottery_name)
+        frame.insert(1, "lottery_zh_name", GAME_ZH_NAMES.get(self.lottery_name, ""))
         frame["method"] = self.method
         return frame
 
@@ -264,18 +277,12 @@ class OmissionPredictor(BasePredictor):
     @staticmethod
     def _omission_scores(frame: pandas.DataFrame, side: str, pool: dict) -> dict:
         lo, hi = pool[side]
-        seq = [_split(t) for t in frame[f"lottery_{side}"]]
+        hits = _occurrence_matrix(frame, f"lottery_{side}", lo, hi)
+        counts, currents, _, miss_sums = _miss_statistics(hits)
         scores = {}
-        for n in range(lo, hi + 1):
-            current, gaps = 0, []
-            for draw in seq:
-                if n in draw:
-                    gaps.append(current)
-                    current = 0
-                else:
-                    current += 1
-            avg = sum(gaps) / len(gaps) if gaps else float(len(seq))
-            scores[n] = current / max(avg, 1.0)
+        for i, n in enumerate(range(lo, hi + 1)):
+            avg = miss_sums[i] / counts[i] if counts[i] else float(len(frame))
+            scores[n] = currents[i] / max(avg, 1.0)
         return scores
 
     def predict(self, amount: int = 1) -> pandas.DataFrame:
@@ -330,6 +337,8 @@ class DeviationPredictor(BasePredictor):
                 RED_COUNTS[self.lottery_name] if side_name == "red" else BLUE_COUNTS.get(self.lottery_name, 0)
             )
             expected = len(window) * drawn_per_draw / (hi - lo + 1) if len(window) else 0.0
+            # 期望频次 = 窗口期数 × 每期开出个数 ÷ 号码池大小（均匀开奖下的理论均值）；
+            # 卡方偏离度 = (实际 − 期望)² / 期望，衡量单个号码对均匀性的偏离方向与幅度。
             self.scores[side_name] = {n: (c - expected) ** 2 / max(expected, 1e-9) for n, c in counts.items()}
 
     def predict(self, amount: int = 1) -> pandas.DataFrame:
@@ -453,6 +462,8 @@ class TrendPredictor(BasePredictor):
         self.k_sigma = k_sigma
         self.max_trials = max_trials
         sums = [sum(_split(t)) for t in frame["lottery_red"].tail(window)]
+        # 和值带 = 近 window 期红球和值的均值 ± k·σ（即文档记号 MA ± k·σ）。
+        # σ 取总体标准差 pstdev（分母 N），与记号 σ 一致；样本标准差（分母 N−1）才记作 s。
         self.sum_band = (
             statistics.mean(sums) - k_sigma * statistics.pstdev(sums),
             statistics.mean(sums) + k_sigma * statistics.pstdev(sums),
@@ -507,11 +518,12 @@ class TailPredictor(BasePredictor):
     @staticmethod
     def _tail_scores(frame: pandas.DataFrame, side: str, pool: dict) -> dict:
         lo, hi = pool[side]
+        counts = _occurrence_matrix(frame, f"lottery_{side}", lo, hi).sum(axis=0)
         scores = {t: 0 for t in range(0, 10) if any(lo <= t + 10 * m <= hi for m in range(0, hi // 10 + 1))}
-        for text in frame[f"lottery_{side}"]:
-            for n in _split(text):
-                if n % 10 in scores:
-                    scores[n % 10] += 1
+        for i, n in enumerate(range(lo, hi + 1)):
+            tail = n % 10
+            if tail in scores:
+                scores[tail] += int(counts[i])
         return scores
 
     def _auto_tail_count(self, k: int, pool: dict) -> int:
@@ -576,12 +588,18 @@ class MarkovPredictor(BasePredictor):
         self.transition: dict = {side: {} for side in ("red", "blue") if side in self.pool}
         for side in self.transition:
             lo, hi = self.pool[side]
-            seq = [_split(t) for t in frame[f"lottery_{side}"]]
-            for n in range(lo, hi + 1):
-                counts = [[1, 1], [1, 1]]  # Laplace 平滑：[上期未出现/出现][本期未出现/出现]
-                for prev, cur in zip(seq, seq[1:]):
-                    counts[1 if n in prev else 0][1 if n in cur else 0] += 1
-                self.transition[side][n] = counts
+            hits = _occurrence_matrix(frame, f"lottery_{side}", lo, hi)
+            prev, cur = hits[:-1], hits[1:]
+            # Laplace 平滑：[上期未出现/出现][本期未出现/出现]，跨号码向量化计数
+            both = (prev & cur).sum(axis=0)
+            prev_only = (prev & ~cur).sum(axis=0)
+            cur_only = (~prev & cur).sum(axis=0)
+            neither = (~prev & ~cur).sum(axis=0)
+            for i, n in enumerate(range(lo, hi + 1)):
+                self.transition[side][n] = [
+                    [int(neither[i]) + 1, int(cur_only[i]) + 1],
+                    [int(prev_only[i]) + 1, int(both[i]) + 1],
+                ]
 
     def predict(self, amount: int = 1) -> pandas.DataFrame:
         """一阶转移采样选号：按上期出现 / 未出现的转移概率采样，独立时退化为频率。"""
@@ -619,13 +637,19 @@ class Markov2Predictor(BasePredictor):
         self.transition: dict = {side: {} for side in ("red", "blue") if side in self.pool}
         for side in self.transition:
             lo, hi = self.pool[side]
-            seq = [_split(t) for t in frame[f"lottery_{side}"]]
+            hits = _occurrence_matrix(frame, f"lottery_{side}", lo, hi)
             for n in range(lo, hi + 1):
-                counts = [[1, 1] for _ in range(4)]  # [上两期状态(0-3)][本期未出现/出现]
-                for a, b, c in zip(seq, seq[1:], seq[2:]):
-                    s = (1 if n in a else 0) * 2 + (1 if n in b else 0)
-                    counts[s][1 if n in c else 0] += 1
-                self.transition[side][n] = counts
+                self.transition[side][n] = [[1, 1] for _ in range(4)]  # [上两期状态(0-3)][本期未出现/出现]
+            if len(hits) >= 3:
+                # 状态编码：上上期出现 ×2 + 上期出现 → 0..3 共 4 态，跨号码向量化计数
+                state = hits[:-2].astype(numpy.int8) * 2 + hits[1:-1]
+                for s in range(4):
+                    mask = state == s
+                    appear = (hits[2:] & mask).sum(axis=0)
+                    missing = (~hits[2:] & mask).sum(axis=0)
+                    for i, n in enumerate(range(lo, hi + 1)):
+                        self.transition[side][n][s][0] += int(missing[i])
+                        self.transition[side][n][s][1] += int(appear[i])
 
     def predict(self, amount: int = 1) -> pandas.DataFrame:
         """二阶转移采样选号：以上两期组合为状态（4 态），展示高阶状态稀疏后退化均匀。"""
@@ -795,6 +819,17 @@ class FilterPredictor(BasePredictor):
         return self._to_frame(tickets)
 
 
+def _resolve_predictor(method: str) -> tuple[type["BasePredictor"], dict]:
+    """解析策略名（含别名）为预测器类与别名默认参数；未知策略抛 LotteryError。"""
+    predictor_cls = BasePredictor._registry.get(method)
+    if predictor_cls is None and method in BasePredictor._alias_map:
+        cls, overrides = BasePredictor._alias_map[method]
+        return cls, dict(overrides)
+    if predictor_cls is None:
+        raise LotteryError(f"unknown predict method {method!r}")
+    return predictor_cls, {}
+
+
 def load_predict_numbers(
     lottery_name: str = "ssq",
     method: str = "random",
@@ -834,12 +869,8 @@ def load_predict_numbers(
     :return: pandas.DataFrame
     """
     fetch_kwargs = {k: kwargs.pop(k) for k in _FETCH_KEYS if k in kwargs}
-    predictor_cls = BasePredictor._registry.get(method)
-    if predictor_cls is None and method in BasePredictor._alias_map:
-        predictor_cls, overrides = BasePredictor._alias_map[method]
-        kwargs = {**overrides, **kwargs}  # 显式传入的策略参数优先于别名默认值
-    if predictor_cls is None:
-        raise LotteryError(f"unknown predict method {method!r}")
+    predictor_cls, overrides = _resolve_predictor(method)
+    kwargs = {**overrides, **kwargs}  # 显式传入的策略参数优先于别名默认值
     if history is None and predictor_cls.needs_history:
         history = load_history_data(lottery_name=lottery_name, **fetch_kwargs)
     return predictor_cls(lottery_name=lottery_name, history=history, **kwargs).predict(amount=amount)

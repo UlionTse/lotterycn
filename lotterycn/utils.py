@@ -1,18 +1,28 @@
 # coding=utf-8
 # author=Ulion.Tse
 
-import datetime
-import decimal
-import random
+import sys
 import time
+import random
+import decimal
+import datetime
 import urllib.parse
 from typing import Optional, Union
 
 import pandas
 import requests
-
-# pandas.options.display.max_columns = None
-# pandas.options.display.max_rows = None
+from rich.console import Console
+from rich.progress import (
+    MofNCompleteColumn,
+    Progress,
+    ProgressColumn,
+    SpinnerColumn,
+    TaskID,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
+from rich.text import Text
 
 
 class Tse:
@@ -145,3 +155,107 @@ class Tse:
 
 class LotteryError(Exception):
     pass
+
+
+# ----- progress bars: rich-based, brand gradient, non-TTY safe -----
+
+
+class GradientBarColumn(ProgressColumn):
+    """True-gradient bar: the filled part interpolates blue -> teal cell by cell.
+
+    All styling lives as class attributes — subclass and override them to re-theme.
+    """
+
+    BAR_WIDTH = 30
+    BAR_CHAR = "━"
+    BAR_HALF = "╸"  # half-filled boundary cell, same trick pip uses
+    BAR_TRACK_STYLE = "grey35"
+    RGB_FROM = (0x40, 0x51, 0xB5)  # brand blue, matches the docs site / badge
+    RGB_TO = (0x00, 0xC8, 0x96)  # teal reached at 100%
+    BRAND_COLOUR = "#4051B5"  # spinner / description accent (same brand blue)
+
+    def __init__(self, bar_width: Optional[int] = None):
+        super().__init__()  # rich ProgressColumn init: required for get_table_column()
+        self.bar_width = self.BAR_WIDTH if bar_width is None else bar_width
+
+    @classmethod
+    def lerp_colour(cls, fraction: float) -> str:
+        """Interpolate RGB_FROM -> RGB_TO linearly (fraction 0..1) and return a hex colour."""
+        rgb = tuple(round(a + (b - a) * fraction) for a, b in zip(cls.RGB_FROM, cls.RGB_TO))
+        return "#{:02x}{:02x}{:02x}".format(*rgb)
+
+    def render(self, task) -> Text:
+        filled = round(self.bar_width * task.percentage / 100)
+        text = Text()
+        for i in range(self.bar_width):
+            if filled and i < filled:
+                text.append(self.BAR_CHAR, style=self.lerp_colour(i / max(filled - 1, 1)))
+            elif i == filled and 0 < filled < self.bar_width:
+                text.append(self.BAR_HALF, style=self.lerp_colour(i / self.bar_width))
+            else:
+                text.append(self.BAR_CHAR, style=self.BAR_TRACK_STYLE)
+        return text
+
+
+class _RichBar:
+    """Thin single-task wrapper around rich Progress: context manager + advance/set_info."""
+
+    def __init__(self, desc: str, unit: str, total: Optional[int], disable: bool):
+        self._desc = desc
+        self._unit = unit
+        self._total = total
+        self._disable = disable
+        self._progress: Optional[Progress] = None
+        self._task_id: Optional[TaskID] = None
+
+    def __enter__(self) -> "_RichBar":
+        self._progress = Progress(
+            SpinnerColumn(style=GradientBarColumn.BRAND_COLOUR),
+            TextColumn("[bold]{task.description}[/bold]"),
+            GradientBarColumn(),
+            MofNCompleteColumn(),
+            TextColumn("[dim]{task.fields[unit]}[/dim]"),
+            TextColumn("·", style="dim"),
+            TimeElapsedColumn(),
+            TimeRemainingColumn(compact=True),
+            TextColumn("[dim]{task.fields[info]}[/dim]"),
+            transient=False,  # pip-style: keep the finished bar row on screen
+            console=Console(stderr=True),  # keep stdout clean for piping
+            disable=self._disable,  # auto-off when stderr is not a terminal
+        )
+        self._progress.start()
+        self._task_id = self._progress.add_task(self._desc, total=self._total, unit=self._unit, info="")
+        return self
+
+    def __exit__(self, *exc_info) -> None:
+        assert self._progress is not None, "progress bar context manager not entered"
+        self._progress.stop()
+
+    def advance(self, n: int = 1) -> None:
+        assert self._progress is not None and self._task_id is not None, "context manager not entered"
+        self._progress.advance(self._task_id, advance=n)
+
+    def set_info(self, text: str) -> None:
+        """Update the trailing live-info field (e.g. the date window being fetched)."""
+        assert self._progress is not None and self._task_id is not None, "context manager not entered"
+        self._progress.update(self._task_id, info=text)
+
+    def set_total(self, total: int) -> None:
+        """Adjust the task total after the fact (e.g. an overlap-stop shows pages actually fetched)."""
+        assert self._progress is not None and self._task_id is not None, "context manager not entered"
+        self._progress.update(self._task_id, total=total)
+
+
+def progress_bar(
+    desc: str, unit: str = "items", total: Optional[int] = None, disable: Optional[bool] = None
+) -> _RichBar:
+    """Uniform progress-bar factory: brand gradient, live info, auto-off without a TTY.
+
+    :param desc: str, task description, e.g. 'Downloading ssq'.
+    :param unit: str, semantic unit shown after the counter, e.g. 'batches' / 'pages'.
+    :param total: Optional[int], expected number of steps; None for an indeterminate bar.
+    :param disable: Optional[bool], force on/off; defaults to off when stderr is not a TTY.
+    :return: _RichBar, context manager with advance() / set_info().
+    """
+    disable = (not sys.stderr.isatty()) if disable is None else disable
+    return _RichBar(desc=desc, unit=unit, total=total, disable=disable)

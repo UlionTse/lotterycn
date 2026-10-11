@@ -16,27 +16,25 @@ hide:
 
 </div>
 
-本库中每一个奖级、中奖条件与固定奖金，均对照**官方游戏规则**核实（`cwl.gov.cn` 中国福利彩票、`lottery.gov.cn` 中国体育彩票）。
-
 <div class="grid cards" markdown>
-
-- :material-chart-line:{ .lg .middle } **选号策略与回测（核心）**
-
-    ---
-
-    11 个策略 + 可组合缩水引擎，内置滚动回测——所有策略与随机等期望。
 
 - :material-database:{ .lg .middle } **只采官方数据**
 
     ---
 
-    中奖号码与开奖详情（销售额 / 奖池 / 各奖级中奖情况 / 省级分布）直接来自官方渠道——无第三方爬虫。
+    中奖号码与开奖详情（销售额 / 奖池 / 各奖级中奖情况 / 省级分布）直接来自官方渠道——无第三方爬虫。每个奖级均对照官方游戏规则核实：见 [Games & Rules](games.md)。
 
 - :material-calculator:{ .lg .middle } **组合数学的概率与期望**
 
     ---
 
     精确组合计数各奖级命中数；概率、期望、返奖率由官方奖金表推导；支持投注号码即时校验。
+
+- :material-chart-line:{ .lg .middle } **选号策略与回测（核心）**
+
+    ---
+
+    11 个策略 + 可组合缩水引擎，内置滚动回测——所有策略与随机等期望。
 
 - :material-check-decagram:{ .lg .middle } **完整流水线**
 
@@ -48,17 +46,20 @@ hide:
 
 ## 快速上手 { #quickstart }
 
-```python
-from lotterycn import (backtest, backtest_summary, load_history_data,
-                       load_number_statistics, load_predict_numbers,
-                       load_check_result, load_prize_expectation)
+一条完整流水线——收集（缓存增量）→ 分析 → 预测 → 回测 → 校验：
 
-df = load_history_data('ssq', if_cached=True)          # 收集（缓存增量）
-stats = load_number_statistics('ssq', history=df)      # 分析
-picks = load_predict_numbers('ssq', method='hot', amount=5)  # 策略沙盒
-print(load_prize_expectation('ssq'))                   # 概率与期望
-print(backtest_summary(backtest(methods=('random', 'hot'),
-                                lottery_name='ssq', window=100)))
+```python
+import lotterycn
+
+df_ssq = lotterycn.load_history_data(lottery_name='ssq', if_cached=True, sleep_seconds=0.1)
+stats = lotterycn.load_number_statistics(lottery_name='ssq', history=df_ssq)
+print(lotterycn.load_prize_expectation(lottery_name='ssq'))
+
+picks = lotterycn.load_predict_numbers(lottery_name='ssq', method='hot', amount=5)
+results = lotterycn.backtest(lottery_name='ssq', methods=('random', 'hot'), window=10)
+print(lotterycn.backtest_summary(results=results))
+
+print(lotterycn.load_check_result(lottery_name='ssq', my_number='01,05,12,18,27,33|08', if_cached=True))
 ```
 
 详见 [API 参考](api/odds.md)。

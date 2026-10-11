@@ -20,7 +20,7 @@ import pandas
 
 from .analysis import _split
 from .data import load_history_data
-from .predict import load_predict_numbers
+from .predict import BLUE_COUNTS, RED_COUNTS, _resolve_predictor
 from .utils import LotteryError
 
 
@@ -50,7 +50,7 @@ def backtest(
     :param history: pandas.DataFrame, 显式注入历史数据（离线使用）；为 None 时联网拉取。
     :param **fetch_kwargs: 仅 history 为 None 时生效，透传给 load_history_data（如 if_cached）。
     :return: pandas.DataFrame
-        columns: method, lottery_order, lottery_date, red_hits, blue_hits
+        columns: method, lottery_name, lottery_order, lottery_date, red_hits, blue_hits
     """
     if lottery_name not in ("ssq", "qlc", "kl8", "3d", "dlt", "pls", "plw", "qxc"):
         raise LotteryError(f"unsupported lottery name {lottery_name!r}")
@@ -64,32 +64,48 @@ def backtest(
     if window >= len(history):
         raise LotteryError(f"window ({window}) must be smaller than history length ({len(history)})")
 
+    # 预解析各期真实开奖（避免在 method × 期 双层循环内重复切分同一行）
+    actual_orders = history["lottery_order"].tolist()
+    actual_dates = history["lottery_date"].tolist()
+    actual_reds = [_split(t) for t in history["lottery_red"]]
+    actual_blues = (
+        [_split(t) for t in history["lottery_blue"]]
+        if "lottery_blue" in history.columns
+        else [[] for _ in range(len(history))]
+    )
+
     rows = []
     for method in methods:
+        predictor_cls, overrides = _resolve_predictor(method)
         evaluated = 0
         for i in range(window, len(history)):
             if trials is not None and evaluated >= trials:
                 break
-            train = history.iloc[max(0, i - window) : i]
-            actual = history.iloc[i]
             try:
-                ticket = load_predict_numbers(
-                    lottery_name, method=method, amount=1, history=train, **fetch_kwargs
-                ).iloc[0]
+                ticket = (
+                    predictor_cls(
+                        lottery_name=lottery_name,
+                        history=history.iloc[i - window : i],  # i >= window >= 1，切片起点恒非负
+                        **overrides,
+                    )
+                    .predict(amount=1)
+                    .iloc[0]
+                )
             except LotteryError:
                 continue  # 样本不足等策略性跳过
             red_hits, blue_hits = _hits(
                 lottery_name,
                 _split(ticket["lottery_red"]),
                 _split(ticket["lottery_blue"]) if ticket["lottery_blue"] else [],
-                _split(actual["lottery_red"]),
-                _split(actual["lottery_blue"]) if actual["lottery_blue"] else [],
+                actual_reds[i],
+                actual_blues[i],
             )
             rows.append(
                 {
                     "method": method,
-                    "lottery_order": actual["lottery_order"],
-                    "lottery_date": actual["lottery_date"],
+                    "lottery_name": lottery_name,
+                    "lottery_order": actual_orders[i],
+                    "lottery_date": actual_dates[i],
                     "red_hits": red_hits,
                     "blue_hits": blue_hits,
                 }
@@ -99,17 +115,48 @@ def backtest(
 
 
 def backtest_summary(results: pandas.DataFrame) -> pandas.DataFrame:
-    """汇总回测明细：各策略的平均命中个数与评估期数，供与 random 基线对比。
+    """汇总回测明细：各策略的平均命中个数与捕获率。
+
+    avg_red_hit_rate / avg_blue_hit_rate = 平均命中 ÷ 每期开出球数（红 R 个 / 蓝 B 个），
+    即单注平均"捕获"了当期开出球的几分之几；random_red_hit_rate / random_blue_hit_rate
+    为 random 基线方法的实测捕获率（每行重复显示作对照）。理论捕获率 = R÷N、B÷N_blue
+    （如 ssq 红球 6÷33 ≈ 18.2%），策略与基线都应贴近该值——显著偏离首先怀疑样本噪声。
+    结果集不含 random 方法时基线两列为 NaN；kl8 无蓝球，蓝列全为 NaN。
 
     :param results: pandas.DataFrame, backtest 返回的明细表（method / red_hits / blue_hits 等列）。
     :return: pandas.DataFrame
-        columns: method, trials, avg_red_hits, avg_blue_hits，按 method 排序；results 为空时返回同结构空表。
+        columns: lottery_name, method, trials, avg_red_hits, avg_blue_hits,
+        avg_red_hit_rate, avg_blue_hit_rate, random_red_hit_rate, random_blue_hit_rate，
+        按 lottery_name + method 排序；results 为空时返回同结构空表。
     """
     if results.empty:
-        return pandas.DataFrame(columns=["method", "trials", "avg_red_hits", "avg_blue_hits"])
-    summary = results.groupby("method", as_index=False).agg(
+        return pandas.DataFrame(
+            columns=[
+                "lottery_name",
+                "method",
+                "trials",
+                "avg_red_hits",
+                "avg_blue_hits",
+                "avg_red_hit_rate",
+                "avg_blue_hit_rate",
+                "random_red_hit_rate",
+                "random_blue_hit_rate",
+            ]
+        )
+    summary = results.groupby(["lottery_name", "method"], as_index=False).agg(
         trials=("method", "size"),
         avg_red_hits=("red_hits", "mean"),
         avg_blue_hits=("blue_hits", "mean"),
     )
-    return summary.sort_values("method").reset_index(drop=True)
+    drawn = summary["lottery_name"].map(lambda name: (RED_COUNTS[name], BLUE_COUNTS.get(name, 0)))
+    summary["avg_red_hit_rate"] = summary["avg_red_hits"] / drawn.map(lambda t: t[0])
+    blue_drawn = drawn.map(lambda t: t[1])
+    summary["avg_blue_hit_rate"] = (summary["avg_blue_hits"] / blue_drawn).where(blue_drawn > 0)
+    random_rows = summary[summary["method"] == "random"]
+    if random_rows.empty:
+        summary["random_red_hit_rate"] = float("nan")
+        summary["random_blue_hit_rate"] = float("nan")
+    else:
+        summary["random_red_hit_rate"] = float(random_rows["avg_red_hit_rate"].iloc[0])
+        summary["random_blue_hit_rate"] = float(random_rows["avg_blue_hit_rate"].iloc[0])
+    return summary.sort_values(["lottery_name", "method"]).reset_index(drop=True)

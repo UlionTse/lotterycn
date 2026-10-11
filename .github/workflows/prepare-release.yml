@@ -1,0 +1,45 @@
+name: Prepare Release
+
+# tag 推送 → 校验 tag 与 __version__ 一致 → 从双语 CHANGELOG 抽取该版本段落
+# → 自动创建 Draft Release（英文段在上、中文段在下）。
+# 维护者在 GitHub Releases 页检查草稿、可编辑说明后点击 Publish；
+# Publish 动作触发 release.yml 完成构建与 PyPI 上传（Trusted Publisher）。
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Guard - tag must match __version__
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' lotterycn/__init__.py)"
+          echo "tag=${TAG_VERSION} package=${PKG_VERSION}"
+          if [ "${TAG_VERSION}" != "${PKG_VERSION}" ]; then
+            echo "::error::tag v${TAG_VERSION} does not match __version__ ${PKG_VERSION}; fix __version__ or the tag before drafting the release"
+            exit 1
+          fi
+      - name: Extract bilingual changelog notes
+        run: python tools/extract_changelog.py "${GITHUB_REF_NAME#v}" --out release_notes.md
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${GITHUB_REF_NAME}" --json isDraft > /dev/null 2>&1; then
+            echo "release ${GITHUB_REF_NAME} already exists; leaving it untouched"
+            exit 0
+          fi
+          gh release create "${GITHUB_REF_NAME}" \
+            --draft \
+            --title "lotterycn ${GITHUB_REF_NAME#v}" \
+            --notes-file release_notes.md
