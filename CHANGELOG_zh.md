@@ -34,6 +34,8 @@
 - README 精简与去重；文档站首页重排；新增 API Reference 索引页；
   quickstart 示例使用 `if_cached=True` / `sleep_seconds=0.1`。
 - `.gitattributes`：文档站构建产物与自托管 MathJax 不计入语言统计。
+- 安全与质量门禁：依赖审计移出 PR 流程，改为每周定时 `security.yml`（阻塞式告警）；
+  覆盖率门槛 80 → 89（当前实测约 90%）。
 
 ### 修复（Fixes）
 

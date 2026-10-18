@@ -95,4 +95,4 @@ markers = [
 
 [tool.coverage.report]
 # 低于门槛即失败；随测试补充逐步上调
-fail_under = 80
+fail_under = 89

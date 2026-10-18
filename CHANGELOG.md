@@ -35,6 +35,9 @@ English | [简体中文](CHANGELOG_zh.md).
   index page added; quickstart examples use `if_cached=True` / `sleep_seconds=0.1`.
 - `.gitattributes`: built docs site and self-hosted MathJax excluded from
   language statistics.
+- Security & quality gates: dependency audit moved out of PR CI into a weekly
+  scheduled `security.yml` (blocking alerts); coverage gate raised 80 → 89
+  (current total ≈ 90%).
 
 ### Fixed
 

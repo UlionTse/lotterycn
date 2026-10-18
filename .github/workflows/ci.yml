@@ -37,9 +37,3 @@ jobs:
         run: |
           pip install build
           python -m build
-      - name: Dependency security scan
-        # 非阻塞：advisory 命中不使 CI 变红，仅提示
-        continue-on-error: true
-        run: |
-          pip install pip-audit
-          pip-audit --skip-editable
