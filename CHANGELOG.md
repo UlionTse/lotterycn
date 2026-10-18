@@ -33,8 +33,10 @@ English | [简体中文](CHANGELOG_zh.md).
   offline guard for non-network tests.
 - READMEs slimmed and de-duplicated; docs homepage re-ordered; API Reference
   index page added; quickstart examples use `if_cached=True` / `sleep_seconds=0.1`.
-- `.gitattributes`: built docs site and self-hosted MathJax excluded from
-  language statistics.
+- Language statistics now exclude the built docs site (`site/**`) and the self-hosted
+  MathJax assets via `.gitattributes` (`linguist-documentation` / `linguist-vendored`);
+  the `site/` copy itself stays in the repository for offline preview, and its local
+  changes are no longer committed going forward.
 - Security & quality gates: dependency audit moved out of PR CI into a weekly
   scheduled `security.yml` (blocking alerts); coverage gate raised 80 → 89
   (current total ≈ 90%).

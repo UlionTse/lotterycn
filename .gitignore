@@ -8,6 +8,9 @@ dist/
 *.egg-info/
 .eggs/
 
+# Documentation build output (online site is deployed from the gh-pages branch)
+site/
+
 # Environments
 .venv/
 venv/

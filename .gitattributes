@@ -10,7 +10,7 @@
 *.gz binary
 *.db binary
 
-# GitHub Linguist 语言统计排除：site/ 是构建产物（文档站静态副本），
-# docs/assets/mathjax/ 是自托管的第三方库，均不代表项目本身的语言构成
+# GitHub Linguist 语言统计排除：site/ 是构建产物（文档站静态副本，保留在仓库中
+# 供离线预览），docs/assets/mathjax/ 是自托管的第三方库——均不代表项目本身的语言构成
 site/** linguist-documentation
 docs/assets/mathjax/** linguist-vendored

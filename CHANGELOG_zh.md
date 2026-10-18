@@ -33,7 +33,9 @@
   非联网用例离线守卫。
 - README 精简与去重；文档站首页重排；新增 API Reference 索引页；
   quickstart 示例使用 `if_cached=True` / `sleep_seconds=0.1`。
-- `.gitattributes`：文档站构建产物与自托管 MathJax 不计入语言统计。
+- 语言统计不再计入文档站构建产物 `site/**` 与自托管 MathJax（`.gitattributes` 的
+  `linguist-documentation` / `linguist-vendored` 标记）；`site/` 副本仍保留在仓库中
+  供离线预览，其本地变化今后不再提交。
 - 安全与质量门禁：依赖审计移出 PR 流程，改为每周定时 `security.yml`（阻塞式告警）；
   覆盖率门槛 80 → 89（当前实测约 90%）。
 

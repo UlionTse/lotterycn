@@ -141,8 +141,11 @@ git push origin v1.0.1
 5. **README 徽章**：PyPI version / license / python / downloads 自动点亮。
    **conda-forge 已收录 lotterycn**：上 PyPI 后，regro 自动化机器人通常会对 feedstock
    自动发起版本更新 PR，维护者审核合并即可点亮（无需 staged-recipes 新建流程）。
-6. **site/ 双轨说明**：仓库内提交的 `site/` 只是静态副本（供本地/离线预览）；
-   线上 Pages 由 docs.yml 重建，两者独立、互不依赖。
+6. **site/ 静态副本**：`site/` 为本地 `mkdocs build` 产物，保留在仓库中供离线预览；
+   语言统计已通过 `.gitattributes`（`linguist-documentation` / `linguist-vendored`）排除，
+   线上 Pages 由 docs.yml 从 gh-pages 分支独立部署。其本地变化默认不再提交
+   （`.gitignore` 中的 `site/` 条目为意图标记；注意 gitignore 对已跟踪文件不生效，
+   提交时请手动排除）。
 
 ## 5. 失败与补救
 
