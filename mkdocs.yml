@@ -124,6 +124,7 @@ nav:
   - Games & Rules: games.md
   - Strategies: strategies.md
   - API Reference:
+      - api/index.md
       - data: api/data.md
       - odds: api/odds.md
       - check: api/check.md

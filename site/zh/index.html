@@ -290,7 +290,8 @@
 
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
 
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <div class="md-nav__link md-nav__container">
+            <a href="api/" class="md-nav__link ">
 
   <span class="md-ellipsis">
 
@@ -298,8 +299,13 @@
 
   </span>
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+
+          </div>
 
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
@@ -468,7 +474,7 @@
 <p><img alt="LotteryCN" class="logo" src="../assets/lotterycn_logo.png" /></p>
 <p><strong>一个有趣好玩的中国福利彩票与体育彩票分析库</strong>——官方开奖数据、组合数学概率与期望、选号策略与预测回测、中奖校验。</p>
 <p><a class="md-button md-button--primary" href="#quickstart">快速上手</a>
-<a class="md-button" href="api/odds/">API 参考</a></p>
+<a class="md-button" href="api/">API 参考</a></p>
 </div>
 <div class="grid cards">
 <ul>
@@ -508,7 +514,7 @@
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">lotterycn</span><span class="o">.</span><span class="n">load_check_result</span><span class="p">(</span><span class="n">lottery_name</span><span class="o">=</span><span class="s1">'ssq'</span><span class="p">,</span> <span class="n">my_number</span><span class="o">=</span><span class="s1">'01,05,12,18,27,33|08'</span><span class="p">,</span> <span class="n">if_cached</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </span></code></pre></div>
-<p>详见 <a href="api/odds/">API 参考</a>。</p>
+<p>详见 <a href="api/">API 参考</a>。</p>
 <div class="admonition warning">
 <p class="admonition-title">诚实声明</p>
 <p>彩票开奖是<strong>独立随机事件</strong>。历史统计无法预测未来开奖——本库任何策略的期望

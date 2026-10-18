@@ -12,7 +12,7 @@ hide:
 **A Python library for enjoyable analysis of Chinese welfare & sports lotteries** — official draw data, combinatorial odds & expected value, number-picking strategies with backtesting, and winning checks.
 
 [Get Started](#quickstart){ .md-button .md-button--primary }
-[API Reference](api/odds.md){ .md-button }
+[API Reference](api/index.md){ .md-button }
 
 </div>
 
@@ -62,7 +62,7 @@ print(lotterycn.backtest_summary(results=results))
 print(lotterycn.load_check_result(lottery_name='ssq', my_number='01,05,12,18,27,33|08', if_cached=True))
 ```
 
-See the [API Reference](api/odds.md) for details.
+See the [API Reference](api/index.md) for details.
 
 !!! warning "Honest disclaimer"
 

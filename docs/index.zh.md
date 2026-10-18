@@ -12,7 +12,7 @@ hide:
 **一个有趣好玩的中国福利彩票与体育彩票分析库**——官方开奖数据、组合数学概率与期望、选号策略与预测回测、中奖校验。
 
 [快速上手](#quickstart){ .md-button .md-button--primary }
-[API 参考](api/odds.md){ .md-button }
+[API 参考](api/index.md){ .md-button }
 
 </div>
 
@@ -62,7 +62,7 @@ print(lotterycn.backtest_summary(results=results))
 print(lotterycn.load_check_result(lottery_name='ssq', my_number='01,05,12,18,27,33|08', if_cached=True))
 ```
 
-详见 [API 参考](api/odds.md)。
+详见 [API 参考](api/index.md)。
 
 !!! warning "诚实声明"
 
